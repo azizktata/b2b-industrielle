@@ -177,7 +177,7 @@ export default function HeroPhoto() {
       </div>
 
       {/* ── Progress Indicators ── */}
-      <div className="relative z-20 max-w-7xl mx-auto w-full px-8 pb-10">
+      <div className="relative z-20 max-w-7xl mx-auto  px-8 pb-10">
         <div className="flex items-center gap-6">
           {SLIDES.map((_, i) => (
             <button

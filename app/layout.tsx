@@ -16,8 +16,8 @@ const barlow = Barlow({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Techniflux",
-    default: "Techniflux — Spécialiste Régulation Vapeur & Robinetterie Industrielle",
+    template: "%s | LOGO",
+    default: "LOGO — Spécialiste Régulation Vapeur & Robinetterie Industrielle",
   },
   description:
     "Distributeur agréé en robinetterie industrielle, régulation vapeur et instrumentation. Fiches techniques, dimensionnement et devis sous 12h pour les professionnels.",

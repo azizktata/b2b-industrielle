@@ -15,7 +15,7 @@ const BRANDS = [
 ]
 
 const STATS = [
-  { value: "35+",    label: "Années d'expertise" },
+  { value: "30",    label: "Années d'expertise" },
   { value: "2 500+", label: "Références en stock" },
   { value: "< 12 h", label: "Délai de devis" },
   { value: "100%",   label: "SAV certifié fabricant" },
@@ -383,8 +383,8 @@ export default function HomePage() {
                     <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink/40 mb-3">
                       Email
                     </p>
-                    <a href="mailto:contact@techniflux.fr" className="text-ink font-sans text-sm hover:text-steel transition-colors">
-                      contact@techniflux.fr
+                    <a href="mailto:contact@logo.fr" className="text-ink font-sans text-sm hover:text-steel transition-colors">
+                      contact@logo.fr
                     </a>
                   </div>
                   <div>
@@ -395,14 +395,14 @@ export default function HomePage() {
                   </div>
 
                   {/* Urgency callout */}
-                  <div className="bg-navy-900 px-5 py-4 mt-2">
+                  {/* <div className="bg-navy-900 px-5 py-4 mt-2">
                     <p className="text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans mb-1">
                       Urgence maintenance
                     </p>
                     <p className="text-white/55 text-xs font-sans leading-relaxed">
                       Pour les demandes urgentes de pièces de rechange ou de dépannage, appelez directement votre commercial.
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -428,12 +428,12 @@ export default function HomePage() {
                   </svg>
                 </div>
                 <div>
-                  <p className="font-display font-black text-white text-sm uppercase tracking-[0.2em] leading-none">Techniflux</p>
+                  <p className="font-display font-black text-white text-sm uppercase tracking-[0.2em] leading-none">LOGO</p>
                   <p className="text-white/30 text-[9px] uppercase tracking-[0.2em] font-sans mt-0.5">Régulation &amp; Vapeur</p>
                 </div>
               </div>
               <p className="text-sm font-sans leading-relaxed">
-                Spécialiste en robinetterie industrielle, régulation vapeur et instrumentation depuis 35 ans.
+                Spécialiste en robinetterie industrielle, régulation vapeur et instrumentation depuis 30 ans.
               </p>
             </div>
 
@@ -468,7 +468,7 @@ export default function HomePage() {
               <ul className="space-y-3 text-sm font-sans">
                 <li className="flex items-start gap-2.5">
                   <svg className="w-4 h-4 mt-0.5 shrink-0 text-steel" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" viewBox="0 0 24 24"><path d="M3 5h18v14H3zM3 5l9 8 9-8"/></svg>
-                  <span>contact@techniflux.fr</span>
+                  <span>contact@logo.fr</span>
                 </li>
                 <li className="flex items-start gap-2.5">
                   <svg className="w-4 h-4 mt-0.5 shrink-0 text-steel" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
@@ -484,7 +484,7 @@ export default function HomePage() {
           </div>
 
           <div className="border-t border-white/8 pt-6 flex flex-col sm:flex-row justify-between gap-3 text-xs font-sans">
-            <p>© 2025 Techniflux. Tous droits réservés.</p>
+            <p>© 2025 LOGO. Tous droits réservés.</p>
             <div className="flex gap-6">
               <Link href="/mentions-legales" className="hover:text-white transition-colors">Mentions légales</Link>
               <Link href="/confidentialite" className="hover:text-white transition-colors">Confidentialité</Link>

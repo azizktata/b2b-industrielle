@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Header from "@/components/Header"
 import ProductsCatalog from "@/components/ProductsCatalog"
+import QuickRFQ from "@/components/QuickRFQ"
 
 export const metadata: Metadata = {
   title: "Catalogue Produits",
@@ -69,7 +70,13 @@ const TAG_STYLE: Record<string, string> = {
 }
 
 /* ── Page (Server Component) ── */
-export default function ProduitsPage() {
+export default function ProduitsPage({ 
+  searchParams 
+}: { 
+  searchParams: { [key: string]: string | string[] | undefined } 
+}) {
+  // Extract the reference from URL (e.g., /produits?devis=VBF-025-40)
+  const activeDevis = typeof searchParams.devis === 'string' ? searchParams.devis : null
   return (
     <>
       <Header />
@@ -133,12 +140,12 @@ export default function ProduitsPage() {
                   <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-2">{fam.sub}</p>
                   <h2 className="font-display font-bold text-ink text-3xl uppercase tracking-tight">{fam.label}</h2>
                 </div>
-                <Link
-                  href={`/produits/${fam.id}`}
+                {/* <Link
+                  href={`#${fam.id}`}
                   className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink hover:text-steel transition-colors whitespace-nowrap"
                 >
                   Voir toute la gamme →
-                </Link>
+                </Link> */}
               </div>
 
               {/* Product grid */}
@@ -172,7 +179,8 @@ export default function ProduitsPage() {
                             Fiche tech.
                           </Link>
                           <Link
-                            href={`/devis?ref=${p.ref}`}
+                            href={`?devis=${p.ref}`}
+              scroll={false} // Important: prevents page jump to top
                             className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans bg-navy-900 text-white px-3 py-1.5 hover:bg-steel transition-colors"
                           >
                             Devis →
@@ -215,6 +223,8 @@ export default function ProduitsPage() {
           </div>
         </section>
       </main>
+      {/* 4. The Modal (Only renders/hydrates when ref is present) */}
+      {/* {activeDevis && <QuickRFQ productRef={activeDevis} />} */}
     </>
   )
 }

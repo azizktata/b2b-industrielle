@@ -191,7 +191,7 @@ export default function ProductsCatalog() {
             {FAMILLE.map(f => (
               <Link
                 key={f.id}
-                href={f.href}
+                href={`#${f.id}`}
                 className="group relative bg-white border border-border flex flex-col gap-5 p-6 overflow-hidden hover:shadow-xl transition-shadow last:col-span-2 lg:last:col-span-1"
               >
                 {/* Top accent line */}

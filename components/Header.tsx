@@ -8,7 +8,7 @@ const NAV = [
   { label: "Marques",    href: "/marques" },
   { label: "Ressources", href: "/ressources" },
   { label: "Services",   href: "/services" },
-  { label: "Contact",    href: "/contact" },
+  // { label: "Contact",    href: "/contact" },
 ]
 
 export default function Header() {
@@ -27,7 +27,7 @@ export default function Header() {
           </div>
           <div>
             <p className="font-display font-black text-white text-sm uppercase tracking-[0.2em] leading-none">
-              Techniflux
+              LOGO
             </p>
             <p className="text-white/35 text-[9px] uppercase tracking-[0.25em] font-sans leading-none mt-0.5">
               Régulation &amp; Vapeur

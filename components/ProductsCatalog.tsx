@@ -9,7 +9,7 @@ const FAMILLE = [
     id: "robinetterie",
     name: "Robinetterie Industrielle",
     tags: "Vannes · Soupapes · Clapets",
-    href: "/produits/robinetterie",
+    href: "/produits/famille/robinetterie",
     svg: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" className="w-10 h-10">
         <path d="M10 18L24 25L10 32V18z" fill="currentColor" stroke="none" opacity="0.9"/>
@@ -22,10 +22,10 @@ const FAMILLE = [
     ),
   },
   {
-    id: "vapeur",
+    id: "regulation-vapeur",
     name: "Régulation Vapeur",
     tags: "Purgeurs · Détendeurs · Séparateurs",
-    href: "/produits/vapeur",
+    href: "/produits/famille/regulation-vapeur",
     svg: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" className="w-10 h-10">
         <path d="M14 42V28H34V42"/>
@@ -41,7 +41,7 @@ const FAMILLE = [
     id: "instrumentation",
     name: "Instrumentation",
     tags: "Manomètres · Thermomètres · Pressostats",
-    href: "/produits/instrumentation",
+    href: "/produits/famille/instrumentation",
     svg: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" className="w-10 h-10">
         <circle cx="24" cy="26" r="16"/>
@@ -54,10 +54,10 @@ const FAMILLE = [
     ),
   },
   {
-    id: "fluides",
+    id: "traitement-fluides",
     name: "Traitement des Fluides",
     tags: "Filtres · Sécheurs · Air Comprimé",
-    href: "/produits/fluides",
+    href: "/produits/famille/traitement-fluides",
     svg: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" className="w-10 h-10">
         <path d="M6 12H42L28 26V38L20 34V26L6 12z"/>
@@ -71,7 +71,7 @@ const FAMILLE = [
     id: "automatisme",
     name: "Automatisme",
     tags: "Électrovannes · Vannes Motorisées",
-    href: "/produits/automatisme",
+    href: "/produits/famille/automatisme",
     svg: (
       <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square" className="w-10 h-10">
         <circle cx="24" cy="24" r="6"/>
@@ -90,7 +90,7 @@ const APPLICATION = [
     description:
       "Distribution, régulation et contrôle de vapeur basse et haute pression. Purgeurs, détendeurs, séparateurs, clapets et instrumentation associée.",
     products: ["Purgeurs vapeur", "Détendeurs de pression", "Séparateurs vapeur", "Vannes de régulation", "Manomètres PN40"],
-    href: "/applications/vapeur",
+    href: "/produits?application=reseau-vapeur",
     svg: (
       <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square" className="w-16 h-12 opacity-70">
         <line x1="4" y1="30" x2="76" y2="30" strokeWidth="2.5"/>
@@ -108,7 +108,7 @@ const APPLICATION = [
     description:
       "Traitement complet de l'air comprimé industriel : filtration multi-étages, séchage réfrigérant ou dessicant, régulation et distribution vers les postes.",
     products: ["Filtres coalescents", "Sécheurs réfrigérants", "Régulateurs de pression", "Lubrificateurs", "Séparateurs huile-eau"],
-    href: "/applications/air-comprime",
+    href: "/produits?application=air-comprime",
     svg: (
       <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square" className="w-16 h-12 opacity-70">
         <line x1="4" y1="30" x2="76" y2="30" strokeWidth="2.5"/>
@@ -125,7 +125,7 @@ const APPLICATION = [
     description:
       "Régulation et mesure pour circuits d'eau surchauffée, huile thermique et fluides caloporteurs à haute température dans l'industrie chimique et agroalimentaire.",
     products: ["Vannes de régulation", "Transmetteurs de température", "Débitmètres", "Échangeurs à plaques", "Soupapes de sécurité"],
-    href: "/applications/thermique",
+    href: "/produits?application=eau-surchauffee",
     svg: (
       <svg viewBox="0 0 80 60" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="square" className="w-16 h-12 opacity-70">
         <line x1="4" y1="30" x2="76" y2="30" strokeWidth="2.5"/>
@@ -141,8 +141,13 @@ const APPLICATION = [
 
 type View = "famille" | "application"
 
+/* ── Props ─────────────────────────────────────────────── */
+type Props = {
+  counts?: Partial<Record<string, number>>
+}
+
 /* ── Component ─────────────────────────────────────────── */
-export default function ProductsCatalog() {
+export default function ProductsCatalog({ counts = {} }: Props) {
   const [view, setView] = useState<View>("famille")
 
   return (
@@ -188,33 +193,41 @@ export default function ProductsCatalog() {
         {/* View A — Famille Technique */}
         {view === "famille" && (
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
-            {FAMILLE.map(f => (
-              <Link
-                key={f.id}
-                href={`#${f.id}`}
-                className="group relative bg-white border border-border flex flex-col gap-5 p-6 overflow-hidden hover:shadow-xl transition-shadow last:col-span-2 lg:last:col-span-1"
-              >
-                {/* Top accent line */}
-                <div className="absolute top-0 inset-x-0 h-0.5 bg-ink/15 group-hover:bg-steel transition-colors" />
+            {FAMILLE.map(f => {
+              const count = counts[f.id]
+              return (
+                <Link
+                  key={f.id}
+                  href={f.href}
+                  className="group relative bg-white border border-border flex flex-col gap-5 p-6 overflow-hidden hover:shadow-xl transition-shadow last:col-span-2 lg:last:col-span-1"
+                >
+                  {/* Top accent line */}
+                  <div className="absolute top-0 inset-x-0 h-0.5 bg-ink/15 group-hover:bg-steel transition-colors" />
 
-                <div className="text-navy-800 group-hover:text-steel transition-colors mt-1">
-                  {f.svg}
-                </div>
+                  <div className="text-navy-800 group-hover:text-steel transition-colors mt-1">
+                    {f.svg}
+                  </div>
 
-                <div>
-                  <h3 className="font-display font-bold text-ink text-lg uppercase tracking-tight leading-tight mb-1.5">
-                    {f.name}
-                  </h3>
-                  <p className="text-ink-soft text-xs font-sans leading-relaxed">{f.tags}</p>
-                </div>
+                  <div>
+                    <h3 className="font-display font-bold text-ink text-lg uppercase tracking-tight leading-tight mb-1.5">
+                      {f.name}
+                    </h3>
+                    <p className="text-ink-soft text-xs font-sans leading-relaxed">{f.tags}</p>
+                  </div>
 
-                <div className="mt-auto pt-3 border-t border-border">
-                  <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel group-hover:text-navy-800 transition-colors">
-                    Voir les produits →
-                  </span>
-                </div>
-              </Link>
-            ))}
+                  <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel group-hover:text-navy-800 transition-colors">
+                      Voir les produits →
+                    </span>
+                    {count != null && count > 0 && (
+                      <span className="text-[9px] font-bold font-sans text-ink-soft tabular-nums">
+                        {count}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+              )
+            })}
           </div>
         )}
 

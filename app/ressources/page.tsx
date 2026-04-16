@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import Header from "@/components/Header"
+import FichesTechniquesTable, { type FicheRow } from "@/components/FichesTechniquesTable"
+import { getProducts } from "@/lib/catalogue"
 
 export const metadata: Metadata = {
   title: "Ressources Techniques",
@@ -17,17 +19,6 @@ const CATALOGUES = [
   { brand: "Samson AG",    title: "Vannes de Régulation — Séries 3000", pages: "164 p.", size: "11 MB", desc: "Corps de vanne, actionneurs pneumatiques, positionneurs HART.", href: "#" },
   { brand: "Beko Technologies", title: "Solutions Air Comprimé Industriel", pages: "120 p.", size: "7 MB", desc: "Sécheurs réfrigérants, dessicants, filtration, condensats.", href: "#" },
   { brand: "Vega",         title: "Instrumentation de Niveau & Pression", pages: "230 p.", size: "13 MB", desc: "Radars, capacitifs, hydrostatiques, guidés — VEGAPULS series.", href: "#" },
-]
-
-const FICHES = [
-  { ref: "FT-PTE-015", name: "Purgeur thermostatique à bouchon", family: "Régulation Vapeur", brand: "Spirax Sarco", updated: "Jan. 2024" },
-  { ref: "FT-MAN-100", name: "Manomètre glycérine Ø 100 mm", family: "Instrumentation", brand: "Wika", updated: "Fév. 2024" },
-  { ref: "FT-VBF-025", name: "Vanne à bille pleine alésage DN25", family: "Robinetterie", brand: "Samson", updated: "Mar. 2024" },
-  { ref: "FT-EV2-015", name: "Électrovanne 2/2 voies", family: "Automatisme", brand: "Bürkert", updated: "Nov. 2023" },
-  { ref: "FT-FIL-005", name: "Filtre coalescent 5 μm", family: "Traitement Fluides", brand: "Parker", updated: "Déc. 2023" },
-  { ref: "FT-DET-025", name: "Détendeur vapeur à soufflet DN25", family: "Régulation Vapeur", brand: "Yoshitake", updated: "Jan. 2024" },
-  { ref: "FT-SEP-050", name: "Séparateur vapeur cyclonique DN50", family: "Régulation Vapeur", brand: "Spirax Sarco", updated: "Oct. 2023" },
-  { ref: "FT-THB-100", name: "Thermomètre bimétallique L100", family: "Instrumentation", brand: "Wika", updated: "Fév. 2024" },
 ]
 
 const GUIDES = [
@@ -90,6 +81,18 @@ const LEXIQUE = [
 
 /* ── Page ── */
 export default function RessourcesPage() {
+  const fiches: FicheRow[] = getProducts().flatMap(p =>
+    p.pdfs.map(pdf => ({
+      ref: p.id.replace(`${p.marque.toLowerCase()}-`, ""),
+      productId: p.id,
+      name: p.name,
+      pdfLabel: pdf.label,
+      pdfType: pdf.type,
+      url: pdf.url,
+      famille: p.famille,
+      marque: p.marque,
+    }))
+  )
   return (
     <>
       <Header />
@@ -204,75 +207,18 @@ export default function RessourcesPage() {
                   Section 02
                 </p>
                 <h2 className="font-display font-bold text-ink text-3xl uppercase tracking-tight">
-                  Fiches Techniques
+                  Documents Techniques
                 </h2>
                 <p className="text-ink-soft text-sm font-sans mt-2">
-                  Dimensions, courbes de débit, matériaux, certifications — par référence produit.
+                  Fiches techniques, dessins d&apos;assemblage, notices d&apos;installation — tous les PDFs fabricant par référence.
                 </p>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink-soft whitespace-nowrap">
-                500+ fiches disponibles
+              <span className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink-soft whitespace-nowrap tabular-nums">
+                {fiches.length} document{fiches.length !== 1 ? "s" : ""} disponible{fiches.length !== 1 ? "s" : ""}
               </span>
             </div>
 
-            {/* Search bar */}
-            <form action="/recherche" method="get" className="flex mb-6 max-w-xl">
-              <div className="relative flex-1">
-                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">
-                  <svg className="w-4 h-4 text-ink-soft" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                    <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
-                  </svg>
-                </span>
-                <input
-                  type="search" name="q" placeholder="Référence, marque ou type de produit…"
-                  className="w-full bg-white border border-border text-ink placeholder:text-ink-soft/60 text-sm font-sans pl-10 pr-4 py-3 focus:outline-none focus:border-steel/60 transition-colors"
-                />
-              </div>
-              <button type="submit" className="px-5 bg-navy-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel transition-colors">
-                Chercher
-              </button>
-            </form>
-
-            {/* Table */}
-            <div className="bg-white border border-border overflow-x-auto">
-              <table className="w-full text-sm font-sans">
-                <thead>
-                  <tr className="border-b border-border bg-dim">
-                    <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/50">Référence</th>
-                    <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/50">Désignation</th>
-                    <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/50 hidden sm:table-cell">Famille</th>
-                    <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/50 hidden lg:table-cell">Marque</th>
-                    <th className="text-left px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] text-ink/50 hidden lg:table-cell">Mis à jour</th>
-                    <th className="px-5 py-3" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
-                  {FICHES.map(f => (
-                    <tr key={f.ref} className="group hover:bg-dim/50 transition-colors">
-                      <td className="px-5 py-4 font-mono text-[11px] text-ink-soft whitespace-nowrap">{f.ref}</td>
-                      <td className="px-5 py-4 text-ink font-sans text-sm">{f.name}</td>
-                      <td className="px-5 py-4 text-ink-soft text-xs hidden sm:table-cell whitespace-nowrap">{f.family}</td>
-                      <td className="px-5 py-4 text-ink-mid text-xs hidden lg:table-cell">{f.brand}</td>
-                      <td className="px-5 py-4 text-ink-soft text-xs hidden lg:table-cell tabular-nums">{f.updated}</td>
-                      <td className="px-5 py-4 text-right">
-                        <a href="#" className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-navy-800 group-hover:text-steel transition-colors whitespace-nowrap">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                          </svg>
-                          PDF
-                        </a>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className="px-5 py-4 border-t border-border flex items-center justify-between">
-                <p className="text-xs font-sans text-ink-soft">Affichage de 8 fiches sur 500+</p>
-                <Link href="/ressources/fiches" className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel hover:text-navy-800 transition-colors">
-                  Voir toutes les fiches →
-                </Link>
-              </div>
-            </div>
+            <FichesTechniquesTable fiches={fiches} />
           </div>
         </section>
 

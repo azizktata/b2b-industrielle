@@ -3,6 +3,9 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import { BRANDS, getBrandBySlug, getAllBrandSlugs } from "@/lib/brands"
+import { getProducts } from "@/lib/catalogue"
+import type { MarqueKey } from "@/scripts/scraper/types"
+import BrandProductSearch from "@/components/BrandProductSearch"
 
 /* ── Static params for all brand slugs ── */
 export function generateStaticParams() {
@@ -24,6 +27,14 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
   const { slug } = await params
   const brand = getBrandBySlug(slug)
   if (!brand) notFound()
+
+  // Resolve scraped products for this brand via case-insensitive marque match
+  const marqueKey = getProducts().find(
+    p => p.marque.toLowerCase() === brand.id.toLowerCase()
+  )?.marque as MarqueKey | undefined
+  const allBrandProducts = marqueKey
+    ? getProducts().filter(p => p.marque === marqueKey)
+    : []
 
   /* Related brands — same specialty family, different brand */
   const related = BRANDS.filter(b => b.id !== brand.id && b.specialty === brand.specialty).slice(0, 3)
@@ -168,6 +179,14 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
             </div>
           </div>
         </section>
+
+        {/* ── SCRAPED PRODUCT CATALOGUE ── */}
+        {allBrandProducts.length > 0 && (
+          <BrandProductSearch
+            products={allBrandProducts}
+            brandName={brand.name}
+          />
+        )}
 
         {/* ── APPLICATIONS ── */}
         <section className="bg-dim py-12 lg:py-16 border-b border-border">

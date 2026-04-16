@@ -11,6 +11,8 @@ npm run dev       # Start dev server (Turbopack, default)
 npm run build     # Production build
 npm run start     # Run production server
 npm run lint      # Run ESLint
+npm run scrape                 # Run all scrapers → writes data/products.json, data/guides.json, data/catalogues.json
+npm run scrape -- samson       # Run a single brand (merges into existing data, does not wipe other brands)
 ```
 
 > **Note:** `next build` does NOT run the linter automatically (changed in Next.js 16). Run lint separately.
@@ -36,20 +38,64 @@ B2B industrial equipment catalog site (régulation & vapeur) for a company named
 
 ## Architecture
 
-### File structure
+### Data layer
 
-```
-app/
-  layout.tsx        — root layout; loads Barlow fonts, sets lang="fr"
-  page.tsx          — homepage (Server Component); wires together all sections
-  globals.css       — Tailwind v4 entry; OKLCH colour tokens + @theme inline block
-components/
-  Header.tsx        — sticky nav, mobile hamburger, "Demande de Devis" CTA ("use client")
-  HeroSlider.tsx    — auto-advancing 3-slide hero with SVG schematics ("use client")
-  ProductsCatalog.tsx — famille/application toggle grid ("use client")
-```
+Two distinct data sources with different patterns:
+
+**Scraped data** — `data/products.json`, `data/guides.json`, `data/catalogues.json`
+- Populated by `npm run scrape` which runs `scripts/scraper/run.ts` using `tsx`
+- Per-brand scrapers in `scripts/scraper/scrapers/` — **only SAMSON is active** (others are stubbed/commented out in `run.ts`)
+- `SOGECOR.md` at repo root has the per-brand scraper status, source URLs, and current product counts — read it before implementing a new scraper
+- Normalizer in `scripts/scraper/normalizer.ts` assigns `famille` and `application` taxonomy via keyword regexes in `scripts/scraper/families.ts`
+- Product IDs are deterministic slugs: `slugify("{MARQUE}-{product name}")` e.g. `samson-vanne-type-3250`
+- `filterProducts()` uses `fuse.js` for fuzzy full-text search across `name`, `shortDescription`, and `pdfs[].label`
+- Accessed at runtime via `lib/catalogue.ts` helpers: `getProducts()`, `filterProducts()`, `getProductById()`, `groupProductsByFamille()`, `groupProductsByMarque()`, etc.
+- Also exports `FAMILLE_LABELS` and `APPLICATION_LABELS` display maps used by UI components
+- Next.js caches `require("@/data/*.json")` at build time in production
+
+**Hardcoded brand data** — `lib/brands.ts`
+- `BRANDS` array with full `Brand` type: agreement level, SAV status, product families, catalogues, applications
+- `getBrandBySlug(slug)` and `getAllBrandSlugs()` for route generation
+- Brand IDs (slugs) match `MarqueKey` values in `scripts/scraper/types.ts`
+
+**Type taxonomy** — `scripts/scraper/types.ts`
+- `MarqueKey`: SAMSON | SECTORIEL | MIVAL | iFm | sferaco | ADCA
+- `FamilleKey`: robinetterie | regulation-vapeur | instrumentation | traitement-fluides | automatisme
+- `ApplicationKey`: reseau-vapeur | air-comprime | eau-surchauffee
+
+### Routes built
+
+| Route | Type | Data source |
+|---|---|---|
+| `/` | Server Component | Static |
+| `/produits` | Server Component | `lib/catalogue.ts` — supports `?q=` fuzzy search and `?application=` filter |
+| `/produits/famille/[famille]` | Server Component (static) | `filterProducts({ famille })` + `?q=` + `?application=` |
+| `/produits/[slug]` | Server Component (static) | `getProductById(slug)` — `slug` is the product `id` field |
+| `/marques` | Server Component | `lib/brands.ts` |
+| `/marques/[slug]` | Server Component | `lib/brands.ts` via `getBrandBySlug()` |
+| `/ressources` | Server Component | Hardcoded consts |
 
 All new routes go under `app/` using App Router file conventions. New shared UI goes under `components/`.
+
+`ProductsCatalog` (`components/ProductsCatalog.tsx`) is the client component handling the famille/application toggle on `/produits`. It receives a `counts` prop from the server page and renders the two view modes client-side.
+
+### Next.js 16 breaking change: async params
+
+In Next.js 16, dynamic route `params` and `searchParams` are `Promise`s and must be awaited:
+
+```ts
+// ✅ Correct — Next.js 16
+export default async function Page({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+}
+
+// ✅ generateMetadata also needs await
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+}
+```
+
+Do NOT use the old synchronous `{ params }: { params: { slug: string } }` pattern.
 
 ### Design tokens
 
@@ -75,7 +121,9 @@ Fluid type helpers `.text-fluid-hero` and `.text-fluid-h2` are defined in `globa
 
 ### Planned sections (not yet built)
 
-Per the spec: `/produits/[famille]`, `/applications/[app]`, `/marques`, `/marques/[slug]`, `/ressources`, `/services`, `/contact`, `/devis`, `/recherche`, Espace Client Pro.
+Per the spec: `/applications/[app]`, `/services`, `/contact`, `/devis`, `/recherche`, Espace Client Pro.
+
+Scrapers not yet implemented: SECTORIEL, MIVAL, iFm, sferaco, ADCA — see `SOGECOR.md` for source URLs and expected data shapes.
 
 ## Design Skills
 

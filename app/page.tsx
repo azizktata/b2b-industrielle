@@ -440,10 +440,16 @@ export default function HomePage() {
             <div>
               <h4 className="text-white text-[10px] font-bold uppercase tracking-[0.25em] font-sans mb-4">Produits</h4>
               <ul className="space-y-2.5 text-sm font-sans">
-                {["Robinetterie Industrielle", "Régulation Vapeur", "Instrumentation", "Traitement des Fluides", "Automatisme"].map(name => (
-                  <li key={name}>
-                    <Link href={`/produits/${name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")}`} className="hover:text-white transition-colors">
-                      {name}
+                {[
+                  { label: "Robinetterie Industrielle", slug: "robinetterie" },
+                  { label: "Régulation Vapeur",         slug: "regulation-vapeur" },
+                  { label: "Instrumentation",           slug: "instrumentation" },
+                  { label: "Traitement des Fluides",    slug: "traitement-fluides" },
+                  { label: "Automatisme",               slug: "automatisme" },
+                ].map(({ label, slug }) => (
+                  <li key={slug}>
+                    <Link href={`/produits/famille/${slug}`} className="hover:text-white transition-colors">
+                      {label}
                     </Link>
                   </li>
                 ))}

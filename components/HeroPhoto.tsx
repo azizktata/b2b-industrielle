@@ -10,21 +10,21 @@ const SLIDES = [
     eyebrow: "RÉSEAUX VAPEUR",
     headline: ["MAÎTRISEZ", "CHAQUE", "PRESSION"],
     body: "Purgeurs, détendeurs, séparateurs — distributeur agréé Spirax Sarco et Gestra, SAV certifié fabricant.",
-    cta: { label: "Voir Régulation Vapeur", href: "/produits/vapeur" },
+    cta: { label: "Voir Régulation Vapeur", href: "/produits/famille/regulation-vapeur" },
   },
   {
     image: "/hero-2.jfif",
     eyebrow: "INSTRUMENTATION",
     headline: ["MESUREZ", "AVEC", "PRÉCISION"],
     body: "Manomètres, thermomètres, transmetteurs Wika et Vega — gamme complète pour toutes conditions industrielles.",
-    cta: { label: "Voir Instrumentation", href: "/produits/instrumentation" },
+    cta: { label: "Voir Instrumentation", href: "/produits/famille/instrumentation" },
   },
   {
     image: "/hero-air.jpg",
     eyebrow: "AIR COMPRIMÉ",
     headline: ["PROTÉGEZ", "VOS", "MACHINES"],
     body: "Filtration, séchage, régulation de pression. Solutions Beko, Parker et Norgren pour réseaux industriels.",
-    cta: { label: "Voir Traitement Fluides", href: "/produits/fluides" },
+    cta: { label: "Voir Traitement Fluides", href: "/produits/famille/traitement-fluides" },
   },
 ] as const
 
@@ -134,7 +134,7 @@ export default function HeroPhoto() {
               <span className="w-2 h-2 bg-steel" /> RECHERCHE TECHNIQUE
             </h3>
             
-            <form action="/recherche" method="get" className="space-y-4">
+            <form action="/produits" method="get" className="space-y-4">
               <div className="relative">
                 <input
                   type="search"

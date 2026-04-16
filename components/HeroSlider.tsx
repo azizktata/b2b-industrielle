@@ -15,7 +15,7 @@ const SLIDES = [
       { k: "TEMP. MAX", v: "250 °C" },
       { k: "FLUIDE", v: "VAPEUR" },
     ],
-    cta: { label: "Voir Régulation Vapeur", href: "/produits/vapeur" },
+    cta: { label: "Voir Régulation Vapeur", href: "/produits/famille/regulation-vapeur" },
   },
   {
     eyebrow: "INSTRUMENTATION",
@@ -27,7 +27,7 @@ const SLIDES = [
       { k: "PROTECTION", v: "IP 67/68" },
       { k: "GAMME", v: "WIKA / VEGA" },
     ],
-    cta: { label: "Voir Instrumentation", href: "/produits/instrumentation" },
+    cta: { label: "Voir Instrumentation", href: "/produits/famille/instrumentation" },
   },
   {
     eyebrow: "AIR COMPRIMÉ",
@@ -39,7 +39,7 @@ const SLIDES = [
       { k: "FILTRATION", v: "0.01 μm" },
       { k: "DÉBIT MAX", v: "1000 Nm³/h" },
     ],
-    cta: { label: "Voir Traitement Fluides", href: "/produits/fluides" },
+    cta: { label: "Voir Traitement Fluides", href: "/produits/famille/traitement-fluides" },
   },
 ] as const
 
@@ -318,7 +318,7 @@ export default function HeroSlider() {
 
           {/* Technical search */}
           <div className="mt-8">
-            <form action="/recherche" method="get">
+            <form action="/produits" method="get">
               <div className="flex">
                 <div className="relative flex-1">
                   <span className="absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none">

@@ -167,7 +167,7 @@ export default async function FamillePage({
                 ))}
               </div>
             )}
-            {hasFilter && (
+            {/* {hasFilter && (
               <div className="flex">
                 <Link
                   href={`/produits/famille/${famille}`}
@@ -176,14 +176,14 @@ export default async function FamillePage({
                   Effacer les filtres ×
                 </Link>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
         {/* ── RESULTS COUNT (when filtering) ── */}
         {hasFilter && (
           <div className="bg-dim border-b border-border">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
               <span className="text-ink text-sm font-sans">
                 <strong className="font-bold">{products.length}</strong> résultat{products.length !== 1 ? "s" : ""}
                 {q?.trim() && (
@@ -196,6 +196,14 @@ export default async function FamillePage({
                   <> · {marque}</>
                 )}
               </span>
+            <div className="flex">
+                <Link
+                  href={`/produits/famille/${famille}`}
+                  className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-ink-soft hover:text-steel transition-colors"
+                >
+                  Effacer les filtres ×
+                </Link>
+              </div>
             </div>
           </div>
         )}

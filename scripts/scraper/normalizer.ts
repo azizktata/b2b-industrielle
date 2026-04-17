@@ -19,6 +19,7 @@ import type {
   Product,
   Guide,
   Catalogue,
+  FamilleKey,
 } from "./types.js";
 import {
   detectFamille,
@@ -27,6 +28,10 @@ import {
   slugify,
 } from "./families.js";
 
+// Some scrapers (e.g. Sectoriel) know the famille from the URL and pass it
+// through as _famille to skip keyword detection.
+type RawProductWithHint = RawProduct & { _famille?: FamilleKey }
+
 // ─── Products ─────────────────────────────────────────────────────────────────
 
 export function normaliseProducts(raws: RawProduct[]): Product[] {
@@ -34,8 +39,9 @@ export function normaliseProducts(raws: RawProduct[]): Product[] {
   const results: Product[] = [];
 
   for (const raw of raws) {
+    const hint = (raw as RawProductWithHint)._famille
     const searchText = `${raw.name} ${raw.shortDescription ?? ""}`;
-    const famille = detectFamille(searchText);
+    const famille: FamilleKey | null = hint ?? detectFamille(searchText)
 
     // Drop anything we can't classify — keeps the catalogue clean
     if (!famille) {

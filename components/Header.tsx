@@ -22,7 +22,7 @@ export default function Header() {
     e.preventDefault()
     const q = searchValue.trim()
     if (q) {
-      router.push(`/produits?q=${encodeURIComponent(q)}`)
+      router.push(`/recherche?q=${encodeURIComponent(q)}`)
       setSearchOpen(false)
       setSearchValue("")
     }
@@ -146,7 +146,7 @@ export default function Header() {
           <nav className="px-4 py-3 flex flex-col">
             {/* Mobile search */}
             <form
-              onSubmit={e => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement).value.trim(); if (q) { router.push(`/produits?q=${encodeURIComponent(q)}`); setOpen(false) } }}
+              onSubmit={e => { e.preventDefault(); const q = (e.currentTarget.querySelector("input") as HTMLInputElement).value.trim(); if (q) { router.push(`/recherche?q=${encodeURIComponent(q)}`); setOpen(false) } }}
               className="flex mb-2 pt-2 pb-4 border-b border-white/8"
             >
               <div className="relative flex-1">

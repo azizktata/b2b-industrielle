@@ -1,210 +1,277 @@
 /**
  * SAMSON scraper
  *
- * Source URL (already filtered by you):
- *   https://www.samsongroup.com/fr/telechargements/documentation/
- *   ?tx_solr[q]=*
- *   &tx_solr[filter][0]=archive:0
- *   &tx_solr[filter][1]=document_productline:SAMSON
- *   &tx_solr[filter][2]=language:FR
+ * TWO-SOURCE STRATEGY:
  *
- * The page is rendered server-side by TYPO3 + Apache Solr, so plain
- * fetch + cheerio is enough — no headless browser needed.
+ * Source 1 — Product listing pages (/fr/produits/...)
+ *   JS-rendered by TYPO3. Gives us: product name, reference, detail URL.
+ *   Requires Playwright.
  *
- * Pagination: Solr pages are appended as &tx_solr[page]=N (0-indexed).
- * We keep fetching until a page returns zero results.
+ * Source 2 — Documentation index (/fr/telechargements/documentation/ with Solr filters)
+ *   Also JS-rendered. Gives us: PDF links keyed by product name / reference.
+ *   Requires Playwright.
+ *
+ * The two sources are cross-referenced by product reference number to attach
+ * PDFs to the right product. Products with no matching PDF are still included.
+ *
+ * INSTALL (one-time):
+ *   npm install -D playwright
+ *   npx playwright install chromium
  */
 
-import * as cheerio from "cheerio"
-import type { RawProduct } from "../types.js"
-
-// ─── Config ──────────────────────────────────────────────────────────────────
-
-const BASE_URL =
-  "https://www.samsongroup.com/fr/telechargements/documentation/" +
-  "?tx_solr%5Bq%5D=%2A" +
-  "&tx_solr%5Bfilter%5D%5B0%5D=archive%3A0" +
-  "&tx_solr%5Bfilter%5D%5B1%5D=document_productline%3ASAMSON" +
-  "&tx_solr%5Bfilter%5D%5B2%5D=language%3AFR"
-
-// Append &tx_solr%5Bpage%5D=N for pages > 0
-const PAGE_PARAM = "&tx_solr%5Bpage%5D="
+import { chromium } from "playwright"
+import type { Browser, BrowserContext, Page } from "playwright"
+import type { RawProduct, FamilleKey } from "../types.js"
 
 const SAMSON_BASE = "https://www.samsongroup.com"
 
-// Polite delay between page requests (ms) — avoids hammering the server
-const REQUEST_DELAY_MS = 9600
+// ─── Product listing URLs → Famille ──────────────────────────────────────────
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+const PRODUCT_URLS: { url: string; famille: FamilleKey }[] = [
+  { url: `${SAMSON_BASE}/fr/produits/vannes/`,                  famille: "robinetterie"       },
+  { url: `${SAMSON_BASE}/fr/produits/accessoires/`,             famille: "robinetterie"       },
+  { url: `${SAMSON_BASE}/fr/produits/servomoteurs/`,            famille: "automatisme"        },
+  { url: `${SAMSON_BASE}/fr/produits/regulateurs-automoteurs/`, famille: "regulation-vapeur"  },
+  { url: `${SAMSON_BASE}/fr/produits/systemes-dautomation/`,    famille: "automatisme"        },
+  { url: `${SAMSON_BASE}/fr/produits/sondes-et-thermostats/`,   famille: "instrumentation"    },
+  { url: `${SAMSON_BASE}/fr/produits/convertisseurs/`,          famille: "instrumentation"    },
+  { url: `${SAMSON_BASE}/fr/produits/systemes-modulaires/`,     famille: "regulation-vapeur"  },
+]
 
-interface SamsonRow {
+// ─── Documentation index (Solr-filtered: SAMSON productline, FR language) ────
+
+const DOC_INDEX_URL =
+  `${SAMSON_BASE}/fr/telechargements/documentation/` +
+  `?tx_solr%5Bq%5D=%2A` +
+  `&tx_solr%5Bfilter%5D%5B0%5D=archive%3A0` +
+  `&tx_solr%5Bfilter%5D%5B1%5D=document_productline%3ASAMSON` +
+  `&tx_solr%5Bfilter%5D%5B2%5D=language%3AFR`
+
+const PRODUCT_CARD_SEL = ".results-entry"
+const RENDER_WAIT      = 2500
+const NAV_TIMEOUT      = 30_000
+
+// ─── Intermediate types ───────────────────────────────────────────────────────
+
+interface ListingItem {
   name: string
-  docType: string          // raw label from the page, e.g. "FICHE TECHNIQUE"
+  reference: string
+  detailUrl: string
+  famille: FamilleKey
+}
+
+interface DocEntry {
+  name: string
   pdfUrl: string
-  productLine: string
-  language: string
+  label: string
 }
 
 // ─── Entry point ─────────────────────────────────────────────────────────────
 
 export async function scrapeSamson(): Promise<RawProduct[]> {
-  console.log("[SAMSON] Starting scrape …")
+  console.log("[SAMSON] Launching Chromium …")
+  const browser: Browser = await chromium.launch({ headless: true })
+  const context: BrowserContext = await browser.newContext({
+    locale: "fr-FR",
+    userAgent:
+      "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
+      "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  })
 
-  const allRows: SamsonRow[] = []
-  let page = 0
+  try {
+    const listingItems = await scrapeListingPages(context)
+    console.log(`[SAMSON] ${listingItems.length} products from listing pages`)
+
+    const docEntries = await scrapeDocIndex(context)
+    console.log(`[SAMSON] ${docEntries.length} documents from doc index`)
+
+    const products = crossReference(listingItems, docEntries)
+    console.log(`[SAMSON] ${products.length} final products`)
+    return products
+  } finally {
+    await browser.close()
+    console.log("[SAMSON] Browser closed")
+  }
+}
+
+// ─── Phase 1: product listings ────────────────────────────────────────────────
+
+async function scrapeListingPages(context: BrowserContext): Promise<ListingItem[]> {
+  const all: ListingItem[] = []
+
+  for (const { url, famille } of PRODUCT_URLS) {
+    const page = await context.newPage()
+    try {
+      const items = await scrapeListingAllPages(page, url, famille)
+      all.push(...items)
+    } finally {
+      await page.close()
+    }
+  }
+
+  return all
+}
+
+async function scrapeListingAllPages(
+  page: Page,
+  baseUrl: string,
+  famille: FamilleKey
+): Promise<ListingItem[]> {
+  const all: ListingItem[] = []
+  let pageNum = 0
+
+  console.log(`[SAMSON] Listing → ${baseUrl}`)
 
   while (true) {
-    const url = page === 0 ? BASE_URL : `${BASE_URL}${PAGE_PARAM}${page}`
-    console.log(`[SAMSON] Fetching page ${page} → ${url}`)
+    // TYPO3 Solr pagination uses tx_solr[page]=N (same as doc index)
+    const url =
+      pageNum === 0
+        ? baseUrl
+        : `${baseUrl}?tx_solr%5Bpage%5D=${pageNum}`
 
-    const rows = await fetchPage(url)
+    await page.goto(url, { waitUntil: "networkidle", timeout: NAV_TIMEOUT })
 
-    if (rows.length === 0) {
-      console.log(`[SAMSON] Page ${page} returned 0 rows — stopping pagination.`)
+    const appeared = await page
+      .waitForSelector(PRODUCT_CARD_SEL, { timeout: 10_000 })
+      .then(() => true)
+      .catch(() => false)
+
+    if (!appeared) {
+      console.log(`[SAMSON]   Page ${pageNum}: no cards — done`)
       break
     }
 
-    console.log(`[SAMSON] Page ${page}: ${rows.length} rows`)
-    allRows.push(...rows)
-    page++
+    await page.waitForTimeout(RENDER_WAIT)
 
-    await delay(REQUEST_DELAY_MS)
+    const items = await page.evaluate(
+      ({ sel, base }: { sel: string; base: string }) =>
+        Array.from(document.querySelectorAll(sel)).map((el) => {
+          const href = el.querySelector("a.results-entry--link")?.getAttribute("href") ?? ""
+          const reference = el.querySelector(".results-topic, h5")?.textContent?.trim() ?? ""
+          const description = el.querySelector(".result-content, p")?.textContent?.trim() ?? ""
+          return {
+            reference,
+            description,
+            href: href.startsWith("http") ? href : `${base}${href}`,
+          }
+        }),
+      { sel: PRODUCT_CARD_SEL, base: SAMSON_BASE }
+    )
+
+    if (items.length === 0) {
+      console.log(`[SAMSON]   Page ${pageNum}: 0 items — done`)
+      break
+    }
+
+    const pageItems: ListingItem[] = items
+      .filter((i) => i.reference)
+      .map((i) => ({
+        name: i.description ? `${i.reference} — ${i.description}` : i.reference,
+        reference: i.reference,
+        detailUrl: i.href,
+        famille,
+      }))
+
+    console.log(`[SAMSON]   Page ${pageNum}: ${pageItems.length} products`)
+    all.push(...pageItems)
+    pageNum++
   }
 
-  console.log(`[SAMSON] Total raw rows: ${allRows.length}`)
-
-  // Group rows by product name → one Product with multiple PDFs
-  const products = groupIntoProducts(allRows)
-
-  console.log(`[SAMSON] Grouped into ${products.length} products`)
-  return products
+  return all
 }
 
-// ─── Page fetching ────────────────────────────────────────────────────────────
+// ─── Phase 2: documentation index ────────────────────────────────────────────
 
-async function fetchPage(url: string): Promise<SamsonRow[]> {
-  const res = await fetch(url, {
-    headers: {
-      // Mimic a real browser — TYPO3 sometimes blocks headless requests
-      "User-Agent":
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 " +
-        "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-      "Accept-Language": "fr-FR,fr;q=0.9,en;q=0.8",
-      Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-    },
-  })
+async function scrapeDocIndex(context: BrowserContext): Promise<DocEntry[]> {
+  const page = await context.newPage()
+  const all: DocEntry[] = []
+  let pageNum = 0
 
-  if (!res.ok) {
-    console.error(`[SAMSON] HTTP ${res.status} on ${url}`)
-    return []
-  }
+  try {
+    while (true) {
+      const url =
+        pageNum === 0
+          ? DOC_INDEX_URL
+          : `${DOC_INDEX_URL}&tx_solr%5Bpage%5D=${pageNum}`
 
-  const html = await res.text()
-  return parseRows(html)
-}
+      console.log(`[SAMSON] Doc index page ${pageNum}`)
+      await page.goto(url, { waitUntil: "networkidle", timeout: NAV_TIMEOUT })
+      await page.waitForTimeout(RENDER_WAIT)
 
-// ─── HTML parsing ─────────────────────────────────────────────────────────────
+      const docs = await page.evaluate(() => {
+        // TYPO3 Solr renders results as table rows or list items depending on config
+        const rows = Array.from(document.querySelectorAll(
+          "table tbody tr, .download-list tbody tr, " +
+          ".tx-solr-results-list li, .results-list li, ul.solr-results li"
+        ))
 
-function parseRows(html: string): SamsonRow[] {
-  const $ = cheerio.load(html)
-  const rows: SamsonRow[] = []
+        return rows
+          .map((row) => {
+            const link = row.querySelector("a[href*='.pdf']") as HTMLAnchorElement | null
+            if (!link) return null
 
-  const cards = $(".results-teaser")
+            const pdfUrl = link.href
+            const label =
+              link.getAttribute("title")?.trim() ||
+              row.querySelector(".doc-type, td:nth-child(2)")?.textContent?.trim() ||
+              "DOCUMENT"
+            const name =
+              row.querySelector(".doc-title, .title, td:nth-child(1)")?.textContent?.trim() ||
+              link.textContent?.trim() ||
+              ""
 
-  cards.each((_, el) => {
-    const container = $(el)
+            return name && pdfUrl ? { name, pdfUrl, label } : null
+          })
+          .filter(Boolean) as { name: string; pdfUrl: string; label: string }[]
+      })
 
-    // --- 1. Document type ---
-    const docType = container
-      .find(".documentText .walletInfo")
-      .first()
-      .text()
-      .trim()
-
-    // --- 2. Product name ---
-    const rawName = container
-      .find(".documentText h5")
-      .first()
-      .text()
-      .replace(/\n/g, " ")
-      .trim()
-
-    const name = cleanProductName(rawName)
-
-    // --- 3. PDFs (only FR) ---
-    container.find(".updatedDocuments a").each((_, a) => {
-      const link = $(a)
-      const label = link.text().trim() // [FR], [DE], etc.
-
-      if (!label.includes("FR")) return // ✅ ONLY FR
-
-      const href = link.attr("href") ?? ""
-      const pdfUrl = href.startsWith("http")
-        ? href
-        : `${SAMSON_BASE}${href}`
-
-      if (name && pdfUrl) {
-        rows.push({
-          name,
-          docType,
-          language: "FR",
-          productLine: "SAMSON",
-          pdfUrl,
-        })
+      if (docs.length === 0) {
+        console.log(`[SAMSON]   Page ${pageNum}: 0 docs — done`)
+        break
       }
-    })
-  })
 
-  return rows
-}
-function cleanProductName(name: string): string {
-  return name
-    .split("\n")               // split lines
-    .map((s) => s.trim())
-    .filter(Boolean)
-    .pop() ?? name            // take LAST line (actual product)
-}
-
-// ─── Grouping: one Product per unique product name ────────────────────────────
-
-function groupIntoProducts(rows: SamsonRow[]): RawProduct[] {
-  // Multiple rows can share the same product name but have different doc types
-  // (e.g. "Vanne type 3241" has a Fiche Technique AND a Dessin d'assemblage)
-  const map = new Map<string, RawProduct>()
-
-  for (const row of rows) {
-    const key = normaliseKey(row.name)
-
-    if (!map.has(key)) {
-      map.set(key, {
-        name: row.name,
-        marque: "SAMSON",
-        pdfs: [],
-        sourceUrl: BASE_URL,
-      })
+      console.log(`[SAMSON]   Page ${pageNum}: ${docs.length} docs`)
+      all.push(...docs)
+      pageNum++
     }
-
-    const product = map.get(key)!
-
-    // Only add the PDF if we haven't seen this URL already
-    if (!product.pdfs.some((p) => p.url === row.pdfUrl)) {
-      product.pdfs.push({
-        label: row.docType || "DOCUMENT",
-        url: row.pdfUrl,
-      })
-    }
+  } finally {
+    await page.close()
   }
 
-  // Filter: must have at least one PDF
-  return [...map.values()].filter((p) => p.pdfs.length > 0)
+  return all
 }
 
-// ─── Utilities ────────────────────────────────────────────────────────────────
+// ─── Phase 3: cross-reference listings ↔ docs ─────────────────────────────────
 
-function normaliseKey(name: string): string {
-  return name.toLowerCase().trim().replace(/\s+/g, " ")
-}
+function crossReference(
+  items: ListingItem[],
+  docs: DocEntry[]
+): RawProduct[] {
+  return items.map((item) => {
+    // Match docs whose name contains the product reference (e.g. "3241", "7110")
+    // Reference numbers are typically 4+ digits
+    const ref = item.reference.trim()
 
-function delay(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
+    const matchingDocs = docs.filter((doc) => {
+      // Direct inclusion check — "Type 3241" matches reference "3241"
+      return (
+        doc.name.includes(ref) ||
+        // Also match if doc name contains a numeric token that appears in the product name
+        new RegExp(`\\b${ref}\\b`, "i").test(doc.name)
+      )
+    })
+
+    const seen = new Set<string>()
+    const pdfs = matchingDocs
+      .filter((doc) => !seen.has(doc.pdfUrl) && seen.add(doc.pdfUrl))
+      .map((doc) => ({ label: doc.label, url: doc.pdfUrl }))
+
+    return {
+      name: item.name,
+      marque: "SAMSON",
+      pdfs,
+      sourceUrl: item.detailUrl,
+      _famille: item.famille,
+    } as RawProduct & { _famille: FamilleKey }
+  })
 }

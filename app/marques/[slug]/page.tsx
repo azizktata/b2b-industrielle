@@ -3,7 +3,7 @@ import { notFound } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import { BRANDS, getBrandBySlug, getAllBrandSlugs } from "@/lib/brands"
-import { getProducts } from "@/lib/catalogue"
+import { getProducts, getCatalogues } from "@/lib/catalogue"
 import type { MarqueKey } from "@/scripts/scraper/types"
 import BrandProductSearch from "@/components/BrandProductSearch"
 
@@ -35,6 +35,11 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
   const allBrandProducts = marqueKey
     ? getProducts().filter(p => p.marque === marqueKey)
     : []
+
+  // Catalogues from scraped data, matched case-insensitively on marque
+  const brandCatalogues = getCatalogues().filter(
+    c => c.marque.toLowerCase() === brand.id.toLowerCase()
+  )
 
   /* Related brands — same specialty family, different brand */
   const related = BRANDS.filter(b => b.id !== brand.id && b.specialty === brand.specialty).slice(0, 3)
@@ -114,14 +119,14 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
           </div>
         </section>
 
-        {/* ── PRODUCT RANGE ── */}
+        {/* ── GAMME & DOCUMENTATION ── */}
         <section className="bg-surface py-14 lg:py-20 border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-10 lg:gap-16">
 
               {/* Left */}
               <div>
-                <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-2">Gamme</p>
+                <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-2">Gamme & Documentation</p>
                 <h2 className="font-display font-bold text-ink text-2xl uppercase tracking-tight leading-none mb-4">
                   Produits {brand.name}
                 </h2>
@@ -139,14 +144,19 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 </Link>
               </div>
 
-              {/* Right — product families */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Right — unified grid: product families + catalogues */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                {/* Product family cards */}
                 {brand.productDetail.map(fam => (
-                  <div key={fam.name} className="bg-white border border-border p-5">
-                    <h3 className="font-display font-bold text-ink text-lg uppercase tracking-tight mb-3">
+                  <div key={fam.name} className="bg-white border border-border flex flex-col p-5 relative">
+                    <span className="absolute top-3 right-3 text-[8px] font-bold uppercase tracking-[0.15em] font-sans px-2 py-0.5 bg-ink/6 text-ink-soft">
+                      Gamme
+                    </span>
+                    <h3 className="font-display font-bold text-ink text-lg uppercase tracking-tight mb-3 pr-12">
                       {fam.name}
                     </h3>
-                    <div className="flex flex-wrap gap-1.5 mb-4">
+                    <div className="flex flex-wrap gap-1.5 mb-4 flex-1">
                       {fam.refs.map(ref => (
                         <span key={ref} className="font-mono text-[10px] text-ink-soft bg-dim border border-border px-2 py-0.5">
                           {ref}
@@ -155,25 +165,62 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                     </div>
                     <Link
                       href={`/devis?marque=${brand.id}&famille=${encodeURIComponent(fam.name)}`}
-                      className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-steel hover:text-navy-800 transition-colors"
+                      className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-steel hover:text-navy-800 transition-colors mt-auto"
                     >
                       Demande de prix →
                     </Link>
                   </div>
                 ))}
-              </div>
-            </div>
 
-            {/* Full product list */}
-            <div className="mt-8 pt-8 border-t border-border">
-              <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink/40 mb-4">
-                Familles de produits distribuées
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {brand.products.map(p => (
-                  <span key={p} className="px-4 py-2 bg-dim border border-border text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
-                    {p}
-                  </span>
+                {/* Catalogue cards */}
+                {brandCatalogues.map(cat => (
+                  <div key={cat.id} className="group bg-white border border-border flex flex-col hover:shadow-xl transition-shadow relative">
+                    <span className="absolute top-3 right-3 z-10 text-[8px] font-bold uppercase tracking-[0.15em] font-sans px-2 py-0.5 bg-white/15 text-white/70">
+                      Catalogue
+                    </span>
+                    {/* Visual header */}
+                    <div className="bg-navy-900 h-20 flex items-center justify-center relative overflow-hidden shrink-0">
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundImage: "linear-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / 0.03) 1px, transparent 1px)",
+                          backgroundSize: "24px 24px",
+                        }}
+                      />
+                      <div className="relative flex items-center gap-3">
+                        <svg viewBox="0 0 24 24" fill="none" className="w-6 h-6 text-white/40" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
+                          <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                          <polyline points="14 2 14 8 20 8" />
+                        </svg>
+                        <p className="text-white/25 text-[9px] font-bold uppercase tracking-[0.2em] font-sans">{cat.marque}</p>
+                      </div>
+                    </div>
+                    <div className="p-4 flex flex-col gap-2 flex-1">
+                      <h3 className="font-display font-bold text-ink text-sm uppercase tracking-tight leading-tight flex-1">
+                        {cat.name}
+                      </h3>
+                      <div className="flex items-center justify-between pt-2 border-t border-border">
+                        <a
+                          href={cat.pdfUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-navy-800 group-hover:text-steel transition-colors"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+                            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                          </svg>
+                          Télécharger PDF
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Fallback: product tag badges when no productDetail cards */}
+                {brand.productDetail.length === 0 && brand.products.map(p => (
+                  <div key={p} className="bg-white border border-border p-5 flex items-center">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">{p}</span>
+                  </div>
                 ))}
               </div>
             </div>
@@ -210,76 +257,6 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
           </div>
         </section>
 
-        {/* ── CATALOGUES ── */}
-        <section className="bg-surface py-14 lg:py-20 border-b border-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
-              <div>
-                <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-2">Documentation</p>
-                <h2 className="font-display font-bold text-ink text-2xl uppercase tracking-tight">
-                  Catalogues {brand.name}
-                </h2>
-              </div>
-              <Link
-                href="/ressources#catalogues"
-                className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink hover:text-steel transition-colors whitespace-nowrap"
-              >
-                Tous les catalogues →
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {brand.catalogues.map(cat => (
-                <div key={cat.title} className="group bg-white border border-border flex flex-col hover:shadow-xl transition-shadow">
-
-                  {/* Visual header */}
-                  <div className="bg-navy-900 h-24 flex items-center justify-center relative overflow-hidden">
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundImage: "linear-gradient(oklch(1 0 0 / 0.03) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / 0.03) 1px, transparent 1px)",
-                        backgroundSize: "24px 24px",
-                      }}
-                    />
-                    <div className="relative flex items-center gap-3">
-                      <svg viewBox="0 0 24 24" fill="none" className="w-7 h-7 text-white/40" stroke="currentColor" strokeWidth="1.5" strokeLinecap="square">
-                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                        <polyline points="14 2 14 8 20 8" />
-                      </svg>
-                      <div>
-                        <p className="text-white/25 text-[9px] font-bold uppercase tracking-[0.2em] font-sans">{brand.name}</p>
-                        <p className="text-white/50 text-[10px] font-sans tabular-nums">{cat.pages} · {cat.size}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-5 flex flex-col gap-3 flex-1">
-                    <div className="flex-1">
-                      <h3 className="font-display font-bold text-ink text-base uppercase tracking-tight leading-tight mb-2">
-                        {cat.title}
-                      </h3>
-                      <p className="text-ink-soft text-xs font-sans leading-relaxed">{cat.desc}</p>
-                    </div>
-                    <div className="flex items-center justify-between pt-3 border-t border-border">
-                      <a
-                        href="#"
-                        className="inline-flex items-center gap-1.5 text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-navy-800 group-hover:text-steel transition-colors"
-                      >
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                          <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
-                        </svg>
-                        Télécharger PDF
-                      </a>
-                      <a href="#" className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-ink-soft hover:text-ink transition-colors">
-                        Feuilleter en ligne
-                      </a>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
 
         {/* ── SAV BLOCK (if applicable) ── */}
         {brand.sav && (

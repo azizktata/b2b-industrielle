@@ -1,1 +1,74 @@
-[]
+[
+  {
+    "id": "guide-sectoriel-directive-ce-pression",
+    "name": "Directive CE Pression",
+    "marque": "SECTORIEL",
+    "famille": null,
+    "pdfUrl": "https://www.sectoriel.com/media/cms-sectoriel/guide-technique/directive-ce-pression_1.pdf",
+    "sourceUrl": "https://www.sectoriel.com/fr/guide-technique",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sectoriel-directive-ce-atex",
+    "name": "Directive CE ATEX",
+    "marque": "SECTORIEL",
+    "famille": null,
+    "pdfUrl": "https://www.sectoriel.com/media/cms-sectoriel/guide-technique/directive-ce-atex.pdf",
+    "sourceUrl": "https://www.sectoriel.com/fr/guide-technique",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sectoriel-directive-ce-pression-atex-classement-fluides",
+    "name": "Directive CE Pression & CE ATEX — Classement des fluides",
+    "marque": "SECTORIEL",
+    "famille": null,
+    "pdfUrl": "https://www.sectoriel.com/media/cms-sectoriel/guide-technique/directive-ce-pression-ce-atex-classement-des-fluides.pdf",
+    "sourceUrl": "https://www.sectoriel.com/fr/guide-technique",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sectoriel-normes-iso-en-ansi-api-astm",
+    "name": "Normes ISO, EN, ANSI, API & ASTM",
+    "marque": "SECTORIEL",
+    "famille": "robinetterie",
+    "pdfUrl": "https://www.sectoriel.com/media/cms-sectoriel/guide-technique/normes-iso-en-ansi-api-astm.pdf",
+    "sourceUrl": "https://www.sectoriel.com/fr/guide-technique",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sferaco-determination-appareil-robinetterie",
+    "name": "Détermination d'un appareil de robinetterie",
+    "marque": "sferaco",
+    "famille": "robinetterie",
+    "pdfUrl": "https://www.sferaco.com/media/cms/documentations/guide-technique/determination_appareil_robinetterie.pdf",
+    "sourceUrl": "https://www.sferaco.com/fr/guides-techniques",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sferaco-equivalence-classes-pression",
+    "name": "Équivalence des classes de pression",
+    "marque": "sferaco",
+    "famille": null,
+    "pdfUrl": "https://www.sferaco.com/media/cms/documentations/guide-technique/equivalence_classe_pression.pdf",
+    "sourceUrl": "https://www.sferaco.com/fr/guides-techniques",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sferaco-criteres-choix-clapets-robinets",
+    "name": "Critères de choix des clapets de non-retour et des robinets",
+    "marque": "sferaco",
+    "famille": "robinetterie",
+    "pdfUrl": "https://www.sferaco.com/media/cms/documentations/guide-technique/critere_choix_clapets_non_retour_robinets.pdf",
+    "sourceUrl": "https://www.sferaco.com/fr/guides-techniques",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "guide-sferaco-catalogue-complet",
+    "name": "Guide technique complet Sferaco",
+    "marque": "sferaco",
+    "famille": null,
+    "pdfUrl": "https://www.sferaco.com/media/cms/documentations/guide-technique/catalogue_complet_2021.pdf",
+    "sourceUrl": "https://www.sferaco.com/fr/guides-techniques",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  }
+]

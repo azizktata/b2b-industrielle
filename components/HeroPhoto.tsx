@@ -28,7 +28,7 @@ const SLIDES = [
   },
 ] as const
 
-const BRANDS = ["Spirax Sarco", "Samson", "Gestra", "Wika", "Bürkert", "Parker", "Beko"]
+const BRANDS = ["Sectoriel", "Samson", "Mival", "Adca", "Sferaco", "Ifm"]
 const DURATION = 7000
 const TICK = 60
 
@@ -134,7 +134,7 @@ export default function HeroPhoto() {
               <span className="w-2 h-2 bg-steel" /> RECHERCHE TECHNIQUE
             </h3>
             
-            <form action="/produits" method="get" className="space-y-4">
+            <form action="/recherche" method="get" className="space-y-4">
               <div className="relative">
                 <input
                   type="search"

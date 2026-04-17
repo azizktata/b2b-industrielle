@@ -119,6 +119,22 @@ Fluid type helpers `.text-fluid-hero` and `.text-fluid-h2` are defined in `globa
 - **Font classes:** use `font-display` (Barlow Condensed, headings) and `font-sans` (Barlow, body). Never use Tailwind's default `font-sans`.
 - **Slug generation pattern** (used in brand/product links): `name.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "")`
 
+### Adding a new scraper
+
+Each scraper lives in `scripts/scraper/scrapers/{brand}.ts` and must export a single async function returning `RawProduct[]` (and optionally `RawGuide[]` / `RawCatalogue[]`).
+
+1. Implement `scrape{Brand}(): Promise<RawProduct[]>` — return objects matching the `RawProduct` interface in `scripts/scraper/types.ts`.
+2. Hook it into `run.ts` by importing the function and adding an entry to the `SCRAPERS` registry.
+3. If the source URL already tells you the `FamilleKey` (like Sectoriel), attach it as `_famille` on each `RawProduct` — the normalizer will use it directly and skip keyword detection.
+4. Use **cheerio** for server-rendered pages (like SAMSON/Sectoriel). Use **Playwright** for JS-rendered pages (it is already in `devDependencies`).
+
+```ts
+// Attaching a famille hint to skip keyword detection:
+rawProducts.push({ ...product, _famille: "regulation-vapeur" } as RawProduct)
+```
+
+The `slugify()` used for product IDs (in `scripts/scraper/families.ts`) strips accents via NFD normalisation. This is different from the simpler brand slug pattern used in UI links — don't confuse the two.
+
 ### Planned sections (not yet built)
 
 Per the spec: `/applications/[app]`, `/services`, `/contact`, `/devis`, `/recherche`, Espace Client Pro.

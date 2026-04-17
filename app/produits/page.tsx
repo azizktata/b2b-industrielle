@@ -140,6 +140,7 @@ export default async function ProduitsPage({
               </span>
               <Link
                 href="/produits"
+                scroll={false}
                 className="ml-auto text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-ink-soft hover:text-steel transition-colors"
               >
                 Effacer ×
@@ -158,6 +159,7 @@ export default async function ProduitsPage({
               <Link
                 key={key}
                 href={`/produits?application=${key}${q ? `&q=${encodeURIComponent(q)}` : ""}`}
+                scroll={false}
                 className={`px-3 py-1.5 border text-[10px] font-bold uppercase tracking-[0.15em] font-sans transition-colors ${
                   application === key
                     ? "bg-steel border-steel text-white"
@@ -168,7 +170,7 @@ export default async function ProduitsPage({
               </Link>
             ))}
             {hasFilter && (
-              <Link href="/produits" className="ml-auto text-[10px] font-sans text-ink-soft hover:text-steel transition-colors">
+              <Link href="/produits" scroll={false} className="ml-auto text-[10px] font-sans text-ink-soft hover:text-steel transition-colors">
                 Effacer ×
               </Link>
             )}

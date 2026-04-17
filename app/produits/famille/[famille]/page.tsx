@@ -137,6 +137,7 @@ export default async function FamillePage({
                 <Link
                   key={key}
                   href={`/produits/famille/${famille}?application=${key}${q ? `&q=${encodeURIComponent(q)}` : ""}${marque ? `&marque=${encodeURIComponent(marque)}` : ""}`}
+                  scroll={false}
                   className={`px-3 py-1.5 border text-[10px] font-bold uppercase tracking-[0.15em] font-sans transition-colors ${
                     application === key
                       ? "bg-steel border-steel text-white"
@@ -156,6 +157,7 @@ export default async function FamillePage({
                   <Link
                     key={key}
                     href={`/produits/famille/${famille}?marque=${encodeURIComponent(key)}${q ? `&q=${encodeURIComponent(q)}` : ""}${application ? `&application=${encodeURIComponent(application)}` : ""}`}
+                    scroll={false}
                     className={`px-3 py-1.5 border text-[10px] font-bold uppercase tracking-[0.15em] font-sans transition-colors ${
                       marque === key
                         ? "bg-navy-900 border-navy-900 text-white"
@@ -171,6 +173,7 @@ export default async function FamillePage({
               <div className="flex">
                 <Link
                   href={`/produits/famille/${famille}`}
+                  scroll={false}
                   className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-ink-soft hover:text-steel transition-colors"
                 >
                   Effacer les filtres ×
@@ -199,6 +202,7 @@ export default async function FamillePage({
             <div className="flex">
                 <Link
                   href={`/produits/famille/${famille}`}
+                  scroll={false}
                   className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-ink-soft hover:text-steel transition-colors"
                 >
                   Effacer les filtres ×

@@ -1,1 +1,34 @@
-[]
+[
+  {
+    "id": "catalogue-mival-general",
+    "name": "MIVAL General Catalogue",
+    "marque": "MIVAL",
+    "pdfUrl": "https://www.mival.it/wp-content/uploads/Documentazione/MIVAL%20-%20Catalogo%20Generale%20-%20ENG.pdf",
+    "sourceUrl": "https://mival.it/en/catalogs/",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-mival-technique",
+    "name": "MIVAL Technical Catalogue",
+    "marque": "MIVAL",
+    "pdfUrl": "https://www.mival.it/wp-content/uploads/Documentazione/MIVAL%20-%20Catalogo%20Tecnico.pdf",
+    "sourceUrl": "https://mival.it/en/catalogs/",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-sectoriel-general",
+    "name": "Catalogue général Sectoriel",
+    "marque": "SECTORIEL",
+    "pdfUrl": "https://www.sectoriel.com/fr/catalogues",
+    "sourceUrl": "https://www.sectoriel.com/fr/catalogues",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-sferaco-general",
+    "name": "Catalogue général Sferaco",
+    "marque": "sferaco",
+    "pdfUrl": "https://www.sferaco.com/fr/catalogue-documentation",
+    "sourceUrl": "https://www.sferaco.com/fr/catalogue-documentation",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  }
+]

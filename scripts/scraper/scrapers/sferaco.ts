@@ -96,7 +96,7 @@ async function scrapeAllPages(
 
 // ─── Total count parser ───────────────────────────────────────────────────────
 
-function parseTotalCount($: cheerio.CheerioAPI): number {
+function parseTotalCount($: ReturnType<typeof cheerio.load>): number {
   const text =
     $(".toolbar-amount").first().text() ||
     $(".toolbar-number").first().text() ||
@@ -116,7 +116,7 @@ function parseTotalCount($: cheerio.CheerioAPI): number {
 // ─── Product parser ───────────────────────────────────────────────────────────
 
 function parseProducts(
-  $: cheerio.CheerioAPI,
+  $: ReturnType<typeof cheerio.load>,
   sourceUrl: string,
   famille: FamilleKey,
 ): RawProduct[] {

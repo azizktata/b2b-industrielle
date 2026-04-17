@@ -24,11 +24,8 @@ import type { RawProduct, FamilleKey } from "../types.js"
 const BASE_URL = "https://mival.it/en/products/"
 const PAGE_URL = (n: number) => `https://mival.it/en/products/page/${n}/`
 const REQUEST_DELAY_MS = 8600
-const DETAIL_BATCH_SIZE = 3  // fetch N detail pages in parallel
+const DETAIL_BATCH_SIZE = 3  
 
-// ─── WooCommerce category → Famille ──────────────────────────────────────────
-// Extracted from the <li class="product product_cat-*"> on the listing page.
-// Multiple category classes may match — first match wins.
 
 const CATEGORY_TO_FAMILLE: { pattern: RegExp; famille: FamilleKey }[] = [
   { pattern: /product_cat-bellows-valves/,        famille: "robinetterie"       },
@@ -100,7 +97,7 @@ async function scrapeAllListingPages(): Promise<ListingItem[]> {
   return items
 }
 
-function parseLastPage($: cheerio.CheerioAPI): number {
+function parseLastPage($: ReturnType<typeof cheerio.load>): number {
   // WooCommerce pagination: <a class="page-numbers" href=".../page/8/">8</a>
   // The last numbered link (before →) holds the total page count.
   let max = 1
@@ -111,7 +108,7 @@ function parseLastPage($: cheerio.CheerioAPI): number {
   return max
 }
 
-function parseListingItems($: cheerio.CheerioAPI): ListingItem[] {
+function parseListingItems($: ReturnType<typeof cheerio.load>): ListingItem[] {
   const items: ListingItem[] = []
 
   // WooCommerce: ul.products > li.product

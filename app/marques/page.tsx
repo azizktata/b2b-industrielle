@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Distributeur agréé Spirax Sarco, Gestra, Wika, Bürkert, Samson, Parker, Beko, Vega et plus — capacité SAV certifiée fabricant sur l'ensemble du catalogue.",
 }
 
-const AGREEMENT_ORDER = ["Distributeur Agréé", "Distributeur Officiel", "Partenaire Commercial"] as const
+const AGREEMENT_ORDER = [ "Partenaire Commercial","Distributeur Agréé", "Distributeur Officiel",] as const
 
 export default function MarquesPage() {
   const grouped = AGREEMENT_ORDER.map(level => ({

@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import Header from "@/components/Header"
+import ProductCard from "@/components/ProductCard"
 import {
   filterProducts,
   FAMILLE_LABELS,
@@ -29,11 +30,6 @@ export async function generateMetadata({
   }
 }
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function productSlug(id: string, marque: string): string {
-  return id.replace(`${marque.toLowerCase()}-`, "")
-}
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
@@ -218,92 +214,9 @@ export default async function FamillePage({
 
             {products.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {products.map((p) => {
-                  const techPdf = p.pdfs.find((pdf) => pdf.type === "fiche-technique")
-                  const displayRef = productSlug(p.id, p.marque)
-
-                  return (
-                    <div
-                      key={p.id}
-                      className="group bg-white border border-border flex flex-col hover:shadow-xl transition-shadow relative"
-                    >
-                      <Link href={`/produits/${p.id}`} className="absolute inset-0 z-0" aria-label={`Voir ${p.name}`} />
-                      <div className="absolute top-0 inset-x-0 h-0.5 bg-ink/12 group-hover:bg-steel transition-colors" />
-                      <div className="p-5 flex flex-col gap-3 flex-1">
-                        {/* Ref + marque */}
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="font-mono text-[10px] text-ink-soft tracking-wider truncate max-w-[70%]">
-                            {displayRef}
-                          </span>
-                          <span className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans px-2 py-0.5 bg-ink/6 text-ink-mid shrink-0">
-                            {p.marque}
-                          </span>
-                        </div>
-
-                        {/* Name */}
-                        <div className="flex-1">
-                          <h2 className="font-display font-bold text-ink text-base uppercase tracking-tight leading-tight mb-2">
-                            {p.name}
-                          </h2>
-                          {/* Application tags */}
-                          {p.application.length > 0 && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {p.application.map((app) => (
-                                <span
-                                  key={app}
-                                  className="text-[9px] font-sans text-ink-soft bg-dim border border-border px-1.5 py-0.5"
-                                >
-                                  {APPLICATION_LABELS[app] ?? app}
-                                </span>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* PDF count badge */}
-                        {p.pdfs.length > 0 && (
-                          <div className="flex items-center gap-1 text-[9px] font-sans text-ink-soft">
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-                              <polyline points="14 2 14 8 20 8" />
-                            </svg>
-                            {p.pdfs.length} document{p.pdfs.length > 1 ? "s" : ""}
-                          </div>
-                        )}
-
-                        {/* Actions */}
-                        <div className="flex items-center justify-between pt-3 border-t border-border mt-auto relative z-10">
-                          {techPdf ? (
-                            <a
-                              href={techPdf.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-ink-soft hover:text-ink transition-colors"
-                            >
-                              Fiche tech. ↗
-                            </a>
-                          ) : (
-                            <span />
-                          )}
-                          <div className="flex items-center gap-2">
-                            <Link
-                              href={`/devis?ref=${p.id}`}
-                              className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans border border-steel/60 text-steel px-3 py-1.5 hover:bg-steel hover:text-white transition-colors"
-                            >
-                              Devis
-                            </Link>
-                            <Link
-                              href={`/produits/${p.id}`}
-                              className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans bg-navy-900 text-white px-3 py-1.5 hover:bg-steel transition-colors"
-                            >
-                              Voir →
-                            </Link>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )
-                })}
+                {products.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
               </div>
             ) : (
               /* Empty state */

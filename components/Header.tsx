@@ -3,12 +3,13 @@
 import { useState } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { useDevis } from "@/components/DevisProvider"
 
 const NAV = [
   { label: "Produits",   href: "/produits" },
   { label: "Marques",    href: "/marques" },
   { label: "Ressources", href: "/ressources" },
-  { label: "Services",   href: "/services" },
+  { label: "Partenariat", href: "/partenariat" },
   // { label: "Contact",    href: "/contact" },
 ]
 
@@ -17,6 +18,7 @@ export default function Header() {
   const [searchOpen, setSearchOpen] = useState(false)
   const [searchValue, setSearchValue] = useState("")
   const router = useRouter()
+  const { count } = useDevis()
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault()
@@ -111,15 +113,22 @@ export default function Header() {
             )}
           </div>
 
-          <Link
-            href="/devis"
-            className="flex items-center gap-2 px-5 py-2.5 bg-steel text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel-lt transition-colors"
-          >
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
-              <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-            </svg>
-            Demande de Devis
-          </Link>
+          <div className="relative">
+            <Link
+              href="/devis"
+              className="flex items-center gap-2 px-5 py-2.5 bg-steel text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel-lt transition-colors"
+            >
+              <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="square">
+                <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+              Demande de Devis
+            </Link>
+            {count > 0 && (
+              <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 bg-white text-steel text-[9px] font-black font-sans flex items-center justify-center leading-none">
+                {count}
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Mobile hamburger */}
@@ -180,9 +189,14 @@ export default function Header() {
             <Link
               href="/devis"
               onClick={() => setOpen(false)}
-              className="mt-4 mb-2 py-4 bg-steel text-white text-xs font-bold uppercase tracking-[0.2em] font-sans text-center hover:bg-steel-lt transition-colors"
+              className="mt-4 mb-2 py-4 bg-steel text-white text-xs font-bold uppercase tracking-[0.2em] font-sans text-center hover:bg-steel-lt transition-colors flex items-center justify-center gap-2"
             >
               Demande de Devis
+              {count > 0 && (
+                <span className="min-w-[18px] h-[18px] px-1 bg-white text-steel text-[9px] font-black flex items-center justify-center leading-none">
+                  {count}
+                </span>
+              )}
             </Link>
           </nav>
         </div>

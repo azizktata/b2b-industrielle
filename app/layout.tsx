@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Barlow_Condensed, Barlow } from "next/font/google"
 import "./globals.css"
+import { DevisProvider } from "@/components/DevisProvider"
 
 const barlowCondensed = Barlow_Condensed({
   subsets: ["latin"],
@@ -33,7 +34,7 @@ export default function RootLayout({
       lang="fr"
       className={`${barlowCondensed.variable} ${barlow.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col"><DevisProvider>{children}</DevisProvider></body>
     </html>
   )
 }

@@ -5,14 +5,12 @@ import { useState } from "react"
 type FormState = "idle" | "submitting" | "success"
 
 const SECTEURS = ["Industrie générale", "Agroalimentaire", "Pharmacie / Chimie", "Énergie / Utilities", "BTP / Génie climatique", "Papier / Carton", "Textile", "Autre"]
-const FLUIDES = ["Vapeur", "Air comprimé", "Eau chaude / surchauffée", "Huile thermique", "Autre / Ne sait pas"]
-const TYPES_PRODUIT = ["Robinetterie industrielle", "Régulation vapeur (purgeurs, détendeurs)", "Instrumentation", "Traitement des fluides", "Automatisme", "Autre / Je ne sais pas"]
 
 export default function ContactForm({ compact = false }: { compact?: boolean }) {
   const [state, setState] = useState<FormState>("idle")
   const [data, setData] = useState({
     prenom: "", nom: "", societe: "", email: "", telephone: "",
-    secteur: "", fluide: "", typeProduit: "", message: "", rgpd: false,
+    secteur: "", message: "", rgpd: false,
   })
 
   function set(field: string, value: string | boolean) {
@@ -44,7 +42,7 @@ export default function ContactForm({ compact = false }: { compact?: boolean }) 
           </p>
         </div>
         <button
-          onClick={() => { setState("idle"); setData({ prenom: "", nom: "", societe: "", email: "", telephone: "", secteur: "", fluide: "", typeProduit: "", message: "", rgpd: false }) }}
+          onClick={() => { setState("idle"); setData({ prenom: "", nom: "", societe: "", email: "", telephone: "", secteur: "", message: "", rgpd: false }) }}
           className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel hover:text-navy-800 transition-colors"
         >
           Nouveau message
@@ -81,18 +79,6 @@ export default function ContactForm({ compact = false }: { compact?: boolean }) 
         <select required value={data.secteur} onChange={e => set("secteur", e.target.value)} className={SELECT}>
           <option value="">— Sélectionner —</option>
           {SECTEURS.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
-      </Field>
-      <Field label="Fluide concerné *">
-        <select required value={data.fluide} onChange={e => set("fluide", e.target.value)} className={SELECT}>
-          <option value="">— Sélectionner —</option>
-          {FLUIDES.map(f => <option key={f} value={f}>{f}</option>)}
-        </select>
-      </Field>
-      <Field label="Type de produit recherché *">
-        <select required value={data.typeProduit} onChange={e => set("typeProduit", e.target.value)} className={SELECT}>
-          <option value="">— Sélectionner —</option>
-          {TYPES_PRODUIT.map(t => <option key={t} value={t}>{t}</option>)}
         </select>
       </Field>
       <div className={compact ? "" : "sm:col-span-2"}>

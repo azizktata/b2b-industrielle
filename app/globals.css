@@ -8,6 +8,9 @@
   --navy-700: oklch(0.30 0.055 249);
   --steel:    oklch(0.50 0.18  249);
   --steel-lt: oklch(0.62 0.15  249);
+  --gold:     oklch(0.72 0.13  80);
+  --gold-lt:  oklch(0.84 0.10  80);
+  --gold-dk:  oklch(0.55 0.14  80);
   --graphite: oklch(0.26 0.015 249);
   --surface:  oklch(0.97 0.005 249);
   --dim:      oklch(0.93 0.008 249);
@@ -31,6 +34,9 @@
   --color-navy-700: var(--navy-700);
   --color-steel:    var(--steel);
   --color-steel-lt: var(--steel-lt);
+  --color-gold:     var(--gold);
+  --color-gold-lt:  var(--gold-lt);
+  --color-gold-dk:  var(--gold-dk);
   --color-graphite: var(--graphite);
   --color-surface:  var(--surface);
   --color-dim:      var(--dim);

@@ -1,18 +1,12 @@
 import Link from "next/link"
 import Header from "@/components/Header"
-import HeroSlider from "@/components/HeroSlider"
 // import HeroPhoto from "@/components/HeroPhoto"  ← swap HeroSlider for HeroPhoto once you have real photos in /public/images/
 import ProductsCatalog from "@/components/ProductsCatalog"
-import DimensionnementForm from "@/components/DimensionnementForm"
 import ContactForm from "@/components/ContactForm"
 import HeroPhoto from "@/components/HeroPhoto"
 
 /* ── Static data ──────────────────────────────────────── */
-const BRANDS = [
-  "Spirax Sarco", "Samson", "Gestra", "Wika",
-  "Bürkert", "Yoshitake", "IMI Norgren", "Emerson",
-  "Beko", "Vega", "Parker", "Festo",
-]
+const BRANDS = ["Sectoriel", "Samson", "Mival", "Adca", "Sferaco", "Ifm"]
 
 const STATS = [
   { value: "30",    label: "Années d'expertise" },
@@ -111,7 +105,7 @@ export default function HomePage() {
         {/* ── STATS ── */}
         <section className="bg-graphite py-14">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-2 lg:grid-cols-4 divide-x divide-white/8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 divide-x-0 sm:divide-x divide-white/8">
               {STATS.map(({ value, label }) => (
                 <div key={label} className="px-8 py-4 text-center lg:text-left">
                   <p className="font-display font-black text-white text-5xl leading-none tabular-nums mb-2">
@@ -316,6 +310,69 @@ export default function HomePage() {
             </div>
           </div>
         </section> */}
+
+        {/* ── PARTENARIAT ── */}
+        <section className="bg-dim border-t border-border py-16 lg:py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_420px] gap-12 lg:gap-20 items-center">
+
+              {/* Left copy */}
+              <div>
+                <p className="text-steel text-[10px] font-bold uppercase tracking-[0.35em] font-sans mb-4">Développement Commercial</p>
+                <h2 className="font-display font-black text-ink uppercase text-fluid-h2 tracking-tight leading-none mb-6">
+                  Travaillons<br />Ensemble
+                </h2>
+                <p className="text-ink-mid text-base font-sans leading-relaxed max-w-lg mb-10">
+                  Distributeurs, bureaux d&apos;études, représentants commerciaux — rejoignez notre réseau spécialisé en régulation industrielle et développez vos marchés avec le soutien d&apos;une équipe technique de référence.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Link
+                    href="/partenariat#contact"
+                    className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-navy-900 text-white text-xs font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel transition-colors"
+                  >
+                    Discuter d&apos;une opportunité
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+                      <path d="M5 12h14M13 6l6 6-6 6" />
+                    </svg>
+                  </Link>
+                  <Link
+                    href="/partenariat"
+                    className="inline-flex items-center justify-center px-8 py-4 border border-border text-ink-mid text-xs font-bold uppercase tracking-[0.2em] font-sans hover:border-ink hover:text-ink transition-colors"
+                  >
+                    En savoir plus
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right: 3 tracks */}
+              <div className="flex flex-col gap-px bg-border">
+                {[
+                  {
+                    title: "Réseau Distributeurs",
+                    body: "Accédez à un catalogue multi-marques, un support technique dédié et des conditions adaptées à votre activité.",
+                  },
+                  {
+                    title: "Projets Industrie",
+                    body: "Collaborez sur des affaires complexes : dimensionnement, sourcing, assistance à la mise en œuvre.",
+                  },
+                  {
+                    title: "Représentation Commerciale",
+                    body: "Devenez représentant sur votre territoire ou secteur — accompagnement commercial et technique inclus.",
+                  },
+                ].map(({ title, body }) => (
+                  <div key={title} className="bg-surface px-7 py-6 flex items-start gap-5">
+                    <div className="w-1.5 h-1.5 bg-steel shrink-0 mt-2" />
+                    <div>
+                      <h3 className="font-display font-bold text-ink text-base uppercase tracking-tight mb-1">{title}</h3>
+                      <p className="text-ink-soft text-sm font-sans leading-relaxed">{body}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
+          </div>
+        </section>
 
         {/* ── CTA ── */}
         <section

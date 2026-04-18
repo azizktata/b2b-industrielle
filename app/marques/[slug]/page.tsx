@@ -53,7 +53,8 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
       <main>
 
         {/* ── BRAND HERO ── */}
-        <section className="bg-navy-950 border-b border-white/8">
+        <section className={`border-b ${brand.id === "samson" ? "bg-navy-950 border-gold/40" : "bg-navy-950 border-white/8"}`}>
+          {brand.id === "samson" && <div className="h-1 bg-gold w-full" />}
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
 
             {/* Breadcrumb */}
@@ -71,7 +72,20 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
               <div>
                 {/* Agreement badge */}
                 <div className="inline-flex items-center gap-2 mb-6">
-                  {brand.sav ? (
+                  {brand.id === "samson" ? (
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-1">
+                        {[1,2,3,4,5].map(i => (
+                          <svg key={i} className="w-3.5 h-3.5 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                          </svg>
+                        ))}
+                      </div>
+                      {/* <span className="bg-gold/15 border border-gold/30 px-3 py-1.5 text-gold text-[9px] font-bold uppercase tracking-[0.2em] font-sans">
+                        Partenaire Privilégié · SAV Certifié Fabricant
+                      </span> */}
+                    </div>
+                  ) : brand.sav ? (
                     <span className="bg-steel px-3 py-1.5 text-white text-[9px] font-bold uppercase tracking-[0.2em] font-sans">
                       {brand.agree} · SAV Certifié Fabricant
                     </span>
@@ -83,10 +97,10 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 </div>
 
                 {/* Logo / name */}
-                <h1 className="font-display font-black text-white uppercase text-fluid-h2 tracking-tight leading-none mb-2">
+                <h1 className={`font-display font-black uppercase text-fluid-h2 tracking-tight leading-none mb-2 ${brand.id === "samson" ? "text-gold" : "text-white"}`}>
                   {brand.name}
                 </h1>
-                <p className="text-steel text-xs font-semibold uppercase tracking-[0.3em] font-sans mb-6">
+                <p className={`text-xs font-semibold uppercase tracking-[0.3em] font-sans mb-6 ${brand.id === "samson" ? "text-gold/60" : "text-steel"}`}>
                   {brand.specialty} · {brand.origin}
                 </p>
                 <p className="text-white/55 text-base font-sans leading-relaxed max-w-2xl">
@@ -95,10 +109,10 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
               </div>
 
               {/* Right — quick facts */}
-              <div className="flex flex-col gap-px bg-white/8">
+              <div className={`flex flex-col gap-px ${brand.id === "samson" ? "bg-gold/10" : "bg-white/8"}`}>
                 <div className="bg-navy-950/80 px-6 py-5">
                   <p className="text-white/30 text-[10px] uppercase tracking-[0.25em] font-sans mb-1">Partenariat</p>
-                  <p className="text-white font-display font-bold text-lg uppercase tracking-tight">{brand.agree}</p>
+                  <p className={`font-display font-bold text-lg uppercase tracking-tight ${brand.id === "samson" ? "text-gold" : "text-white"}`}>{brand.id === "samson" ? "Partenaire Privilégié" : brand.agree}</p>
                 </div>
                 <div className="bg-navy-950/80 px-6 py-5">
                   <p className="text-white/30 text-[10px] uppercase tracking-[0.25em] font-sans mb-1">Origine</p>
@@ -108,9 +122,9 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                   <p className="text-white/30 text-[10px] uppercase tracking-[0.25em] font-sans mb-1">Spécialité</p>
                   <p className="text-white font-display font-bold text-lg uppercase tracking-tight">{brand.specialty}</p>
                 </div>
-                <div className={`px-6 py-5 ${brand.sav ? "bg-steel/20" : "bg-navy-950/80"}`}>
+                <div className={`px-6 py-5 ${brand.id === "samson" ? "bg-gold/10" : brand.sav ? "bg-steel/20" : "bg-navy-950/80"}`}>
                   <p className="text-white/30 text-[10px] uppercase tracking-[0.25em] font-sans mb-1">SAV</p>
-                  <p className={`font-display font-bold text-lg uppercase tracking-tight ${brand.sav ? "text-steel-lt" : "text-white"}`}>
+                  <p className={`font-display font-bold text-lg uppercase tracking-tight ${brand.id === "samson" ? "text-gold" : brand.sav ? "text-steel-lt" : "text-white"}`}>
                     {brand.sav ? "Certifié Fabricant" : "Disponible sur demande"}
                   </p>
                 </div>
@@ -236,7 +250,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         )}
 
         {/* ── APPLICATIONS ── */}
-        <section className="bg-dim py-12 lg:py-16 border-b border-border">
+        {/* <section className="bg-dim py-12 lg:py-16 border-b border-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-8 lg:gap-16 items-center">
               <div>
@@ -255,7 +269,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
               </div>
             </div>
           </div>
-        </section>
+        </section> */}
 
 
         {/* ── SAV BLOCK (if applicable) ── */}
@@ -307,7 +321,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         )}
 
         {/* ── OTHER BRANDS ── */}
-        {otherRelated.length > 0 && (
+        {/* {otherRelated.length > 0 && (
           <section className="bg-dim py-12 lg:py-16 border-t border-border">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center gap-4 mb-8">
@@ -337,7 +351,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
               </div>
             </div>
           </section>
-        )}
+        )} */}
 
         {/* ── BOTTOM CTA ── */}
         <section className="bg-surface py-12 border-t border-border">
@@ -359,10 +373,10 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
               </Link>
               <Link
-                href="/#dimensionnement"
+                href="/#contact"
                 className="inline-flex items-center gap-2 px-7 py-3.5 border border-border text-ink text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-dim transition-colors"
               >
-                Étude technique
+                Nous contacter
               </Link>
             </div>
           </div>

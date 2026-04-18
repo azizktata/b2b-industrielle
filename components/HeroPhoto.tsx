@@ -98,7 +98,7 @@ export default function HeroPhoto() {
 
       {/* ── Main content ── */}
       <div className="relative z-20 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-center py-12">
-        
+
         {/* Left — Text Content */}
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-3 mb-6">
@@ -116,19 +116,38 @@ export default function HeroPhoto() {
             {slide.body}
           </p>
 
+          {/* Mobile-only simple search */}
+          <form action="/recherche" method="get" className="relative flex max-w-md lg:hidden mb-6">
+            <input
+              type="search"
+              name="q"
+              placeholder="Rechercher un produit, référence…"
+              className="w-full bg-navy-950/60 border border-white/15 text-white placeholder:text-white/30 text-sm pl-4 pr-12 py-3.5 focus:outline-none focus:border-steel/60 transition-colors"
+            />
+            <button
+              type="submit"
+              aria-label="Rechercher"
+              className="absolute right-0 top-0 h-full w-11 flex items-center justify-center text-white/30 hover:text-steel transition-colors border-l border-white/5"
+            >
+              <svg className="w-3 h-3 sm:w-4 sm:h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+                <circle cx="11" cy="11" r="8" /><path d="M21 21l-4.35-4.35" />
+              </svg>
+            </button>
+          </form>
+
           <div className="flex flex-wrap gap-5">
             <Link href={slide.cta.href} className="group inline-flex items-center gap-4 px-8 py-4 bg-steel text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-steel-lt transition-all">
               {slide.cta.label}
               <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
             </Link>
-            <Link href="/devis" className="inline-flex items-center px-8 py-4 border border-white/20 text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
+            <Link href="/devis" className="hidden sm:inline-flex items-center px-8 py-4 border border-white/20 text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-white/5 transition-all">
               Demande de Devis
             </Link>
           </div>
         </div>
 
-        {/* Right — Technical Brand Search Panel */}
-        <div className="flex flex-col bg-navy-900/40 backdrop-blur-xl border border-white/10 overflow-hidden shadow-2xl">
+        {/* Right — Technical Brand Search Panel (desktop only) */}
+        <div className="hidden lg:flex flex-col bg-navy-900/40 backdrop-blur-xl border border-white/10 overflow-hidden shadow-2xl">
           <div className="p-8 border-b border-white/10 bg-white/5">
             <h3 className="text-white text-xs font-bold uppercase tracking-[0.25em] mb-6 flex items-center gap-2">
               <span className="w-2 h-2 bg-steel" /> RECHERCHE TECHNIQUE
@@ -176,8 +195,8 @@ export default function HeroPhoto() {
         </div>
       </div>
 
-      {/* ── Progress Indicators ── */}
-      <div className="relative z-20 max-w-7xl mx-auto  px-8 pb-10">
+      {/* ── Progress Indicators (hidden on mobile) ── */}
+      <div className="hidden sm:block relative z-20 max-w-7xl mx-auto px-8 pb-10">
         <div className="flex items-center gap-6">
           {SLIDES.map((_, i) => (
             <button

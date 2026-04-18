@@ -150,23 +150,20 @@ type Props = {
 export default function ProductsCatalog({ counts = {} }: Props) {
   const [view, setView] = useState<View>("famille")
 
+  function scrollToFamille(id: string) {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
+  }
+
   return (
-    <section className="bg-surface py-16 lg:py-24">
+    <section className="bg-surface py-10 lg:py-14">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
-        {/* Header row */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
-          <div>
-            <p className="text-steel text-xs font-semibold uppercase tracking-[0.3em] font-sans mb-2">
-              Catalogue Produits
-            </p>
-            <h2 className="font-display font-bold text-ink text-fluid-h2 uppercase tracking-tight">
-              Nos Produits
-            </h2>
-          </div>
-
-          {/* Toggle */}
-          <div className="flex shrink-0 border border-border">
+        {/* Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-8">
+          <p className="text-[10px] font-bold uppercase tracking-[0.25em] font-sans text-ink-soft hidden sm:block">
+            Parcourir par :
+          </p>
+          <div className="flex flex-col sm:flex-row shrink-0 border border-border">
             <button
               onClick={() => setView("famille")}
               className={`px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] font-sans transition-colors ${
@@ -179,7 +176,7 @@ export default function ProductsCatalog({ counts = {} }: Props) {
             </button>
             <button
               onClick={() => setView("application")}
-              className={`px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] font-sans transition-colors border-l border-border ${
+              className={`px-5 py-3 text-[10px] font-bold uppercase tracking-[0.2em] font-sans transition-colors border-t sm:border-t-0 sm:border-l border-border ${
                 view === "application"
                   ? "bg-navy-900 text-white"
                   : "bg-white text-ink-soft hover:text-ink"
@@ -192,14 +189,14 @@ export default function ProductsCatalog({ counts = {} }: Props) {
 
         {/* View A — Famille Technique */}
         {view === "famille" && (
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {FAMILLE.map(f => {
               const count = counts[f.id]
               return (
-                <Link
+                <div
                   key={f.id}
-                  href={f.href}
-                  className="group relative bg-white border border-border flex flex-col gap-5 p-6 overflow-hidden hover:shadow-xl transition-shadow last:col-span-2 lg:last:col-span-1"
+                  onClick={() => scrollToFamille(f.id)}
+                  className="group relative bg-white border border-border flex flex-col gap-5 p-6 overflow-hidden hover:shadow-xl transition-shadow last:sm:col-span-2 last:lg:col-span-1 cursor-pointer"
                 >
                   {/* Top accent line */}
                   <div className="absolute top-0 inset-x-0 h-0.5 bg-ink/15 group-hover:bg-steel transition-colors" />
@@ -216,16 +213,20 @@ export default function ProductsCatalog({ counts = {} }: Props) {
                   </div>
 
                   <div className="mt-auto pt-3 border-t border-border flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel group-hover:text-navy-800 transition-colors">
+                    <Link
+                      href={f.href}
+                      onClick={e => e.stopPropagation()}
+                      className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel hover:text-navy-800 transition-colors"
+                    >
                       Voir les produits →
-                    </span>
+                    </Link>
                     {count != null && count > 0 && (
                       <span className="text-[9px] font-bold font-sans text-ink-soft tabular-nums">
                         {count}
                       </span>
                     )}
                   </div>
-                </Link>
+                </div>
               )
             })}
           </div>

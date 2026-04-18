@@ -49,7 +49,7 @@ Two distinct data sources with different patterns:
 - Normalizer in `scripts/scraper/normalizer.ts` assigns `famille` and `application` taxonomy via keyword regexes in `scripts/scraper/families.ts`
 - Product IDs are deterministic slugs: `slugify("{MARQUE}-{product name}")` e.g. `samson-vanne-type-3250`
 - `filterProducts()` uses `fuse.js` for fuzzy full-text search across `name`, `shortDescription`, and `pdfs[].label`
-- Accessed at runtime via `lib/catalogue.ts` helpers: `getProducts()`, `filterProducts()`, `getProductById()`, `groupProductsByFamille()`, `groupProductsByMarque()`, etc.
+- Accessed at runtime via `lib/catalogue.ts` helpers: `getProducts()`, `filterProducts()`, `getProductById()`, `groupProductsByFamille()`, `groupProductsByMarque()`, `getGuides()`, `filterGuides()`, `getCatalogues()`, etc.
 - Also exports `FAMILLE_LABELS` and `APPLICATION_LABELS` display maps used by UI components
 - Next.js caches `require("@/data/*.json")` at build time in production
 
@@ -74,10 +74,34 @@ Two distinct data sources with different patterns:
 | `/marques` | Server Component | `lib/brands.ts` |
 | `/marques/[slug]` | Server Component | `lib/brands.ts` via `getBrandBySlug()` |
 | `/ressources` | Server Component | Hardcoded consts |
+| `/recherche` | Server Component | `lib/catalogue.ts` — `?q=` search across products, guides, and catalogues |
+| `/devis` | Client Component | `useDevis()` hook (localStorage) + `POST /api/devis` |
+| `/partenariat` | Client Component | Contact form → `POST /api/partenariat` |
+| `POST /api/devis` | Route Handler | `lib/email.ts` via nodemailer — sends to `ADMIN_EMAIL` |
+| `POST /api/partenariat` | Route Handler | `lib/email.ts` via nodemailer — sends to `ADMIN_EMAIL_COMMERCIAL` |
 
 All new routes go under `app/` using App Router file conventions. New shared UI goes under `components/`.
 
 `ProductsCatalog` (`components/ProductsCatalog.tsx`) is the client component handling the famille/application toggle on `/produits`. It receives a `counts` prop from the server page and renders the two view modes client-side.
+
+Other notable components: `QuickRFQ` (quote request modal, client), `ContactForm` / `DimensionnementForm` (form widgets, client), `FichesTechniquesTable` (PDF table, client), `BrandProductSearch` (brand-scoped search, client), `HeroSlider` / `HeroPhoto` (homepage hero variants, client), `ProductCard` (product card with devis button, client), `AddToDevisButton` (standalone add-to-devis CTA, client).
+
+### Devis (quote request) flow
+
+`DevisProvider` (`components/DevisProvider.tsx`) wraps the app in `app/layout.tsx` and exposes `useDevis()`. State is persisted to `localStorage` under the key `"devis"` — hydration is deferred via `useEffect` to avoid SSR mismatch. The context provides `addItem`, `removeItem`, `updateQty`, `clearItems`, and `hasItem`.
+
+`app/devis/page.tsx` is a Client Component (needs `useDevis()`). It renders three states: empty basket, main form + product list, and success screen. On submit it calls `POST /api/devis`.
+
+`app/api/devis/route.ts` validates the payload and calls `sendDevisEmail()` from `lib/email.ts`. Email is sent via **nodemailer** using SMTP credentials from env vars. Required env vars:
+
+```
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_USER=
+SMTP_PASS=
+ADMIN_EMAIL=              # recipient of devis/technical emails
+ADMIN_EMAIL_COMMERCIAL=   # recipient of partenariat/commercial emails
+```
 
 ### Next.js 16 breaking change: async params
 
@@ -137,7 +161,7 @@ The `slugify()` used for product IDs (in `scripts/scraper/families.ts`) strips a
 
 ### Planned sections (not yet built)
 
-Per the spec: `/applications/[app]`, `/services`, `/contact`, `/devis`, `/recherche`, Espace Client Pro.
+Per the spec: `/applications/[app]`, `/services`, `/contact`, Espace Client Pro.
 
 Scrapers not yet implemented: SECTORIEL, MIVAL, iFm, sferaco, ADCA — see `SOGECOR.md` for source URLs and expected data shapes.
 

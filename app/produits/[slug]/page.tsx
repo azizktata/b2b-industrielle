@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import Header from "@/components/Header"
+import AddToDevisButton from "@/components/AddToDevisButton"
 import {
   getProductById,
   getProducts,
@@ -129,12 +130,10 @@ export default async function ProductPage({
                 </h1>
               </div>
               <div className="flex gap-3 shrink-0">
-                <Link
-                  href={`/devis?ref=${product.id}`}
-                  className="px-7 py-4 bg-steel text-white text-xs font-bold uppercase tracking-widest hover:bg-steel-lt transition-colors"
-                >
-                  Demander un devis
-                </Link>
+                <AddToDevisButton
+                  product={{ id: product.id, name: product.name, marque: product.marque }}
+                  size="lg"
+                />
               </div>
             </div>
           </div>
@@ -263,15 +262,10 @@ export default async function ProductPage({
                 </div>
 
                 <div className="p-6 space-y-3">
-                  <Link
-                    href={`/devis?ref=${product.id}`}
-                    className="flex items-center justify-center gap-2 w-full py-3.5 bg-steel text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel-lt transition-colors"
-                  >
-                    Demander un devis
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                      <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                  </Link>
+                  <AddToDevisButton
+                    product={{ id: product.id, name: product.name, marque: product.marque }}
+                    className="flex items-center justify-center gap-2 w-full py-3.5 text-[10px] font-bold uppercase tracking-[0.2em] font-sans transition-colors border"
+                  />
                   <Link
                     href="/#contact"
                     className="flex items-center justify-center w-full py-3.5 border border-white/15 text-white/60 text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:text-white hover:border-white/30 transition-colors"

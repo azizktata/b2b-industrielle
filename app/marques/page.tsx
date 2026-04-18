@@ -3,6 +3,8 @@ import Link from "next/link"
 import Header from "@/components/Header"
 import { BRANDS } from "@/lib/brands"
 
+const SAMSON = BRANDS.find(b => b.id === "samson")!
+
 export const metadata: Metadata = {
   title: "Marques Représentées",
   description: "Distributeur agréé Spirax Sarco, Gestra, Wika, Bürkert, Samson, Parker, Beko, Vega et plus — capacité SAV certifiée fabricant sur l'ensemble du catalogue.",
@@ -55,6 +57,83 @@ export default function MarquesPage() {
           </div>
         </section>
 
+        {/* ── SAMSON FEATURED ── */}
+        {/* <section className="bg-navy-950 border-b-2 border-gold py-12 lg:py-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-3 mb-8">
+              <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span className="text-gold text-[10px] font-bold uppercase tracking-[0.35em] font-sans">Partenaire Privilégié</span>
+              <svg className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+            </div>
+
+            <Link
+              href={`/marques/${SAMSON.id}`}
+              className="group grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 border border-gold/40 hover:border-gold transition-colors overflow-hidden"
+            >
+              <div className="relative bg-navy-900 p-10 lg:p-14 flex flex-col justify-between gap-8 overflow-hidden">
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    backgroundImage: "linear-gradient(oklch(1 0 0 / 0.02) 1px, transparent 1px), linear-gradient(90deg, oklch(1 0 0 / 0.02) 1px, transparent 1px)",
+                    backgroundSize: "32px 32px",
+                  }}
+                />
+                <div className="absolute top-0 left-0 w-1 h-full bg-gold" />
+
+                <div className="relative">
+                  <div className="flex items-center gap-1.5 mb-6">
+                    {[1,2,3,4,5].map(i => (
+                      <svg key={i} className="w-4 h-4 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                      </svg>
+                    ))}
+                  </div>
+                  <h2 className="font-display font-black text-white text-5xl lg:text-6xl uppercase tracking-tight leading-none mb-3">
+                    {SAMSON.name}
+                  </h2>
+                  <p className="text-gold text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-4">{SAMSON.origin} · {SAMSON.specialty}</p>
+                  <p className="text-white/55 text-sm font-sans leading-relaxed max-w-md">{SAMSON.longDesc}</p>
+                </div>
+
+                <div className="relative flex items-center gap-3">
+                  <span className="bg-gold/15 border border-gold/30 px-3 py-1.5 text-gold text-[9px] font-bold uppercase tracking-[0.2em] font-sans">
+                    {SAMSON.agree}
+                  </span>
+                  {SAMSON.sav && (
+                    <span className="bg-steel px-3 py-1.5 text-white text-[9px] font-bold uppercase tracking-[0.2em] font-sans">
+                      SAV Certifié Fabricant
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-navy-950 border-l border-gold/20 p-8 lg:p-10 flex flex-col gap-6">
+                <p className="text-white/30 text-[9px] uppercase tracking-[0.3em] font-sans">Gammes disponibles</p>
+                <div className="flex flex-col gap-px flex-1">
+                  {SAMSON.products.map(p => (
+                    <div key={p} className="flex items-center gap-3 py-3 border-b border-white/6 last:border-0">
+                      <div className="w-1.5 h-1.5 bg-gold shrink-0" />
+                      <span className="text-white/70 text-sm font-sans">{p}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="flex items-center justify-between pt-4 border-t border-gold/20 mt-auto">
+                  <span className="text-white/30 text-[10px] font-sans uppercase tracking-[0.2em]">
+                    {SAMSON.applications.length} applications
+                  </span>
+                  <span className="text-gold text-[10px] font-bold uppercase tracking-[0.2em] font-sans group-hover:text-gold-lt transition-colors">
+                    Voir la gamme →
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </section> */}
+
         {/* ── BRAND GROUPS ── */}
         {grouped.map(({ level, brands }) => brands.length > 0 && (
           <section key={level} className="bg-surface py-14 lg:py-20 border-b border-border last:border-b-0">
@@ -67,14 +146,16 @@ export default function MarquesPage() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {brands.map(b => (
+                {brands.map(b => {
+                  const isSamson = b.id === "samson"
+                  return (
                   <Link
                     key={b.id}
                     href={`/marques/${b.id}`}
-                    className="group bg-white border border-border flex flex-col hover:shadow-xl transition-shadow overflow-hidden"
+                    className={`group flex flex-col hover:shadow-xl transition-shadow overflow-hidden ${isSamson ? "bg-navy-950 border-2 border-gold" : "bg-white border border-border"}`}
                   >
                     {/* Logo area */}
-                    <div className="relative bg-navy-950 h-28 flex flex-col items-center justify-center overflow-hidden">
+                    <div className={`relative h-28 flex flex-col items-center justify-center overflow-hidden ${isSamson ? "bg-navy-900" : "bg-navy-950"}`}>
                       <div
                         className="absolute inset-0"
                         style={{
@@ -82,9 +163,18 @@ export default function MarquesPage() {
                           backgroundSize: "28px 28px",
                         }}
                       />
-                      {/* Logo placeholder — replace with <Image src={`/logos/${b.id}.svg`} …> when assets are ready */}
+                      {isSamson && <div className="absolute top-0 inset-x-0 h-0.5 bg-gold" />}
                       <div className="relative flex flex-col items-center gap-2">
-                        <p className="font-display font-black text-white text-2xl uppercase tracking-[0.08em] leading-none">
+                        {isSamson && (
+                          <div className="flex items-center gap-1 mb-1">
+                            {[1,2,3].map(i => (
+                              <svg key={i} className="w-3 h-3 text-gold" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                              </svg>
+                            ))}
+                          </div>
+                        )}
+                        <p className={`font-display font-black text-2xl uppercase tracking-[0.08em] leading-none ${isSamson ? "text-gold" : "text-white"}`}>
                           {b.name}
                         </p>
                         <p className="text-white/30 text-[9px] uppercase tracking-[0.3em] font-sans">{b.origin}</p>
@@ -96,18 +186,18 @@ export default function MarquesPage() {
                       )}
                     </div>
 
-                    <div className="flex flex-col gap-4 p-5 flex-1">
+                    <div className={`flex flex-col gap-4 p-5 flex-1 ${isSamson ? "bg-navy-950" : ""}`}>
                       <div>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel mb-1">
+                        <p className={`text-[10px] font-bold uppercase tracking-[0.2em] font-sans mb-1 ${isSamson ? "text-gold" : "text-steel"}`}>
                           {b.specialty}
                         </p>
-                        <p className="text-ink-mid text-xs font-sans leading-relaxed line-clamp-3">
+                        <p className={`text-xs font-sans leading-relaxed line-clamp-3 ${isSamson ? "text-white/50" : "text-ink-mid"}`}>
                           {b.desc}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-1.5">
                         {b.products.slice(0, 3).map(p => (
-                          <span key={p} className="px-2 py-0.5 bg-dim border border-border text-[9px] font-sans text-ink-soft">
+                          <span key={p} className={`px-2 py-0.5 text-[9px] font-sans border ${isSamson ? "bg-white/5 border-gold/20 text-white/50" : "bg-dim border-border text-ink-soft"}`}>
                             {p}
                           </span>
                         ))}
@@ -117,15 +207,16 @@ export default function MarquesPage() {
                           </span>
                         )}
                       </div>
-                      <div className="flex items-center justify-between pt-3 border-t border-border mt-auto">
-                        <span className="text-[9px] font-bold uppercase tracking-[0.15em] font-sans text-ink-soft">{b.agree}</span>
-                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] font-sans text-steel group-hover:text-navy-800 transition-colors">
+                      <div className={`flex items-center justify-between pt-3 border-t mt-auto ${isSamson ? "border-gold/20" : "border-border"}`}>
+                        <span className={`text-[9px] font-bold uppercase tracking-[0.15em] font-sans ${isSamson ? "text-gold/60" : "text-ink-soft"}`}>{b.agree}</span>
+                        <span className={`text-[10px] font-bold uppercase tracking-[0.2em] font-sans transition-colors ${isSamson ? "text-gold group-hover:text-gold-lt" : "text-steel group-hover:text-navy-800"}`}>
                           Voir la gamme →
                         </span>
                       </div>
                     </div>
                   </Link>
-                ))}
+                  )
+                })}
               </div>
             </div>
           </section>

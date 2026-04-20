@@ -231,7 +231,7 @@ export default function HomePage() {
                 <p className="text-ink-mid text-sm font-sans leading-relaxed max-w-xs">
                   Au-delà de la distribution — un partenaire technique pour vos équipes maintenance et bureaux d&apos;études.
                 </p>
-                <Link
+                {/* <Link
                   href="/services"
                   className="mt-8 inline-flex items-center gap-3 px-6 py-3.5 bg-navy-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel transition-colors self-start"
                 >
@@ -239,15 +239,15 @@ export default function HomePage() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
                     <path d="M5 12h14M13 6l6 6-6 6" />
                   </svg>
-                </Link>
+                </Link> */}
               </div>
 
               {/* Right: service rows */}
               <div className="flex flex-col divide-y divide-border">
                 {SERVICES.map(s => (
-                  <Link
+                  <div
                     key={s.no}
-                    href={s.href}
+      
                     className="group flex items-start gap-6 py-8 first:pt-0 last:pb-0 hover:bg-dim/60 -mx-6 px-6 transition-colors"
                   >
                     <span className="font-display font-black text-ink/20 text-3xl leading-none shrink-0 mt-1 group-hover:text-steel transition-colors">
@@ -259,13 +259,13 @@ export default function HomePage() {
                       </h3>
                       <p className="text-ink-mid text-sm font-sans leading-relaxed">{s.body}</p>
                     </div>
-                    <svg
+                    {/* <svg
                       className="w-4 h-4 text-ink/25 group-hover:text-steel transition-colors shrink-0 mt-1.5"
                       fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square"
                     >
                       <path d="M5 12h14M13 6l6 6-6 6" />
-                    </svg>
-                  </Link>
+                    </svg> */}
+                  </div>
                 ))}
               </div>
             </div>

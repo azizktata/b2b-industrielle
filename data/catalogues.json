@@ -1,5 +1,21 @@
 [
   {
+    "id": "catalogue-samson-general",
+    "name": "SAMSON General Catalogue",
+    "marque": "SAMSON",
+    "pdfUrl": "https://www.samsongroup.com/document/k00200en.pdf",
+    "sourceUrl": "https://www.samsongroup.com/fr/telechargements/documentation/?tx_solr%5Bq%5D=%2A&tx_solr%5Bfilter%5D%5B0%5D=archive%3A0&tx_solr%5Bfilter%5D%5B1%5D=document_productline%3ASAMSON&tx_solr%5Bfilter%5D%5B2%5D=docType%3A12",
+    "scrapedAt": "2026-04-18T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-samson-food-processing-and-pharmaceutical",
+    "name": "SAMSON Food Processing and Pharmaceutical Catalogue",
+    "marque": "SAMSON",
+    "pdfUrl": "https://www.samsongroup.com/document/k00300en.pdf",
+    "sourceUrl": "https://www.samsongroup.com/fr/telechargements/documentation/?tx_solr%5Bq%5D=%2A&tx_solr%5Bfilter%5D%5B0%5D=archive%3A0&tx_solr%5Bfilter%5D%5B1%5D=document_productline%3ASAMSON&tx_solr%5Bfilter%5D%5B2%5D=docType%3A12",
+    "scrapedAt": "2026-04-18T00:00:00.000Z"
+  },
+  {
     "id": "catalogue-mival-general",
     "name": "MIVAL General Catalogue",
     "marque": "MIVAL",
@@ -29,6 +45,22 @@
     "marque": "sferaco",
     "pdfUrl": "https://www.sferaco.com/fr/catalogue-documentation",
     "sourceUrl": "https://www.sferaco.com/fr/catalogue-documentation",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-adca-general",
+    "name": "Catalogue général ADCA",
+    "marque": "adca",
+    "pdfUrl": "https://online.pubhtml5.com/ycrd/tpyx/#p=1",
+    "sourceUrl": "https://www.valsteam.com/fr/documentation/centre-de-telechargement",
+    "scrapedAt": "2026-04-17T00:00:00.000Z"
+  },
+  {
+    "id": "catalogue-adcapure-general",
+    "name": "Catalogue général ADCAPURE",
+    "marque": "adca",
+    "pdfUrl": "https://online.pubhtml5.com/ycrd/vckv/#p=1",
+    "sourceUrl": "https://www.valsteam.com/fr/documentation/centre-de-telechargement",
     "scrapedAt": "2026-04-17T00:00:00.000Z"
   }
 ]

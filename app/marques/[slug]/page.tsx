@@ -231,11 +231,11 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 ))}
 
                 {/* Fallback: product tag badges when no productDetail cards */}
-                {brand.productDetail.length === 0 && brand.products.map(p => (
+                {/* {brand.productDetail.length === 0 && brand.products.map(p => (
                   <div key={p} className="bg-white border border-border p-5 flex items-center">
                     <span className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">{p}</span>
                   </div>
-                ))}
+                ))} */}
               </div>
             </div>
           </div>
@@ -306,7 +306,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                 </div>
               </div>
 
-              <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              {/* <div className="mt-10 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                 <Link
                   href="/#contact"
                   className="inline-flex items-center gap-2 px-7 py-3.5 bg-steel text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel-lt transition-colors"
@@ -315,7 +315,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
                 </Link>
                 <p className="text-white/30 text-xs font-sans">Réponse sous 24 h ouvrées — diagnostic gratuit</p>
-              </div>
+              </div> */}
             </div>
           </section>
         )}

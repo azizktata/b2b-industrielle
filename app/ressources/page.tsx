@@ -3,6 +3,7 @@ import Link from "next/link"
 import Header from "@/components/Header"
 import FichesTechniquesTable, { type FicheRow } from "@/components/FichesTechniquesTable"
 import { getProducts, getCatalogues, getGuides, FAMILLE_LABELS } from "@/lib/catalogue"
+import Footer from "@/components/Footer"
 
 export const metadata: Metadata = {
   title: "Ressources Techniques",
@@ -278,6 +279,7 @@ export default function RessourcesPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

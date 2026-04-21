@@ -10,6 +10,7 @@ import {
   APPLICATION_LABELS,
 } from "@/lib/catalogue"
 import type { FamilleKey, ApplicationKey } from "@/scripts/scraper/types"
+import Footer from "@/components/Footer"
 
 export const metadata: Metadata = {
   title: "Catalogue Produits",
@@ -274,6 +275,7 @@ export default async function ProduitsPage({
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

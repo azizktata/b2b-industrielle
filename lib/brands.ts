@@ -15,20 +15,6 @@ export type Brand = {
  
 export const BRANDS: Brand[] = [ 
   { 
-    id: "sectoriel", 
-    name: "Sectoriel", 
-    origin: "Tunisie", 
-    specialty: "Distribution Industrielle", 
-    desc: "Distributeur multi-marques spécialisé en vapeur, air comprimé et instrumentation.", 
-    longDesc: "Sectoriel est un distributeur industriel spécialisé dans les équipements de régulation vapeur, d’air comprimé et d’instrumentation. Il propose une sélection de marques internationales reconnues et accompagne les industriels dans leurs projets techniques.", 
-    products: [], 
-    productDetail: [], 
-    sav: true, 
-    agree: "Distributeur Officiel", 
-    catalogues: [], 
-    applications: ["Réseau vapeur", "Air comprimé", "Instrumentation industrielle"], 
-  }, 
-  { 
     id: "samson", 
     name: "Samson", 
     origin: "Allemagne", 
@@ -41,6 +27,20 @@ export const BRANDS: Brand[] = [
     agree: "Partenaire Commercial", 
     catalogues: [], 
     applications: ["Raffinage", "Chimie", "Énergie", "Process industriel"], 
+  }, 
+  { 
+    id: "sectoriel", 
+    name: "Sectoriel", 
+    origin: "Tunisie", 
+    specialty: "Distribution Industrielle", 
+    desc: "Distributeur multi-marques spécialisé en vapeur, air comprimé et instrumentation.", 
+    longDesc: "Sectoriel est un distributeur industriel spécialisé dans les équipements de régulation vapeur, d’air comprimé et d’instrumentation. Il propose une sélection de marques internationales reconnues et accompagne les industriels dans leurs projets techniques.", 
+    products: [], 
+    productDetail: [], 
+    sav: true, 
+    agree: "Distributeur Officiel", 
+    catalogues: [], 
+    applications: ["Réseau vapeur", "Air comprimé", "Instrumentation industrielle"], 
   }, 
   { 
     id: "mival", 

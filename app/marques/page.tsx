@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import Header from "@/components/Header"
 import { BRANDS } from "@/lib/brands"
+import Footer from "@/components/Footer"
 
 const SAMSON = BRANDS.find(b => b.id === "samson")!
 
@@ -275,6 +276,7 @@ export default function MarquesPage() {
           </div>
         </section>
       </main>
+      <Footer />
     </>
   )
 }

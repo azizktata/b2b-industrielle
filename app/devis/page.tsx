@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
 import { useDevis } from "@/components/DevisProvider"
+import { BRANDS } from "@/lib/brands"
 
 const FLUIDES = ["Vapeur", "Air comprimé", "Eau chaude / surchauffée", "Huile thermique", "Autre / Ne sait pas"]
 const TYPES_PRODUIT = ["Robinetterie industrielle", "Régulation vapeur (purgeurs, détendeurs)", "Instrumentation", "Traitement des fluides", "Automatisme", "Autre / Je ne sais pas"]
@@ -14,27 +16,35 @@ interface ContactForm {
   societe: string
   email: string
   telephone: string
+  marque: string
   fluide: string
   typeProduit: string
   message: string
 }
 
-const EMPTY_FORM: ContactForm = {
-  prenom: "",
-  nom: "",
-  societe: "",
-  email: "",
-  telephone: "",
-  fluide: "",
-  typeProduit: "",
-  message: "",
-}
-
 export default function DevisPage() {
   const { items, removeItem, updateQty, clearItems, count } = useDevis()
-  const [form, setForm] = useState<ContactForm>(EMPTY_FORM)
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
+  const searchParams = useSearchParams()
+  const [form, setForm] = useState<ContactForm>(() => ({
+    prenom: "",
+    nom: "",
+    societe: "",
+    email: "",
+    telephone: "",
+    marque: searchParams.get("marque") ?? "",
+    fluide: "",
+    typeProduit: "",
+    message: "",
+  }))
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  const [toast, setToast] = useState(false)
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(false), 5000)
+    return () => clearTimeout(t)
+  }, [toast])
 
   function handleField(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
@@ -42,7 +52,6 @@ export default function DevisPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!items.length) return
     setStatus("submitting")
     setErrorMsg("")
 
@@ -54,43 +63,14 @@ export default function DevisPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Erreur inconnue")
-      setStatus("success")
       clearItems()
+      setForm({ prenom: "", nom: "", societe: "", email: "", telephone: "", marque: "", fluide: "", typeProduit: "", message: "" })
+      setStatus("idle")
+      setToast(true)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Erreur lors de l'envoi.")
       setStatus("error")
     }
-  }
-
-  // ── Success screen ────────────────────────────────────────────────────────
-  if (status === "success") {
-    return (
-      <>
-        <Header />
-        <main className="bg-surface flex-1 flex items-center justify-center px-4 py-24">
-          <div className="max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-steel flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </div>
-            <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-3">Demande envoyée</p>
-            <h1 className="font-display font-black text-ink text-3xl uppercase tracking-tight mb-4">
-              Nous avons bien reçu votre demande
-            </h1>
-            <p className="text-ink-mid text-sm font-sans mb-8">
-              Notre équipe technique vous contactera sous 24h avec un devis personnalisé.
-            </p>
-            <Link
-              href="/produits"
-              className="inline-flex items-center gap-2 px-6 py-3.5 bg-navy-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel transition-colors"
-            >
-              Retour au catalogue
-            </Link>
-          </div>
-        </main>
-      </>
-    )
   }
 
   // ── Main devis page ───────────────────────────────────────────────────────
@@ -233,18 +213,15 @@ export default function DevisPage() {
                 </h2>
 
                 <div className="flex flex-col gap-5">
+                  {/* Prénom + Nom */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="prenom" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
                         Prénom <span className="text-steel">*</span>
                       </label>
                       <input
-                        id="prenom"
-                        name="prenom"
-                        type="text"
-                        required
-                        value={form.prenom}
-                        onChange={handleField}
+                        id="prenom" name="prenom" type="text" required
+                        value={form.prenom} onChange={handleField}
                         className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
                       />
                     </div>
@@ -253,90 +230,90 @@ export default function DevisPage() {
                         Nom <span className="text-steel">*</span>
                       </label>
                       <input
-                        id="nom"
-                        name="nom"
-                        type="text"
-                        required
-                        value={form.nom}
-                        onChange={handleField}
+                        id="nom" name="nom" type="text" required
+                        value={form.nom} onChange={handleField}
                         className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
                       />
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label htmlFor="societe" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
-                      Société
-                    </label>
-                    <input
-                      id="societe"
-                      name="societe"
-                      type="text"
-                      value={form.societe}
-                      onChange={handleField}
-                      className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
-                    />
+                  {/* Société + Téléphone */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="societe" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
+                        Société
+                      </label>
+                      <input
+                        id="societe" name="societe" type="text"
+                        value={form.societe} onChange={handleField}
+                        className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
+                      />
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="telephone" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
+                        Téléphone
+                      </label>
+                      <input
+                        id="telephone" name="telephone" type="tel"
+                        value={form.telephone} onChange={handleField}
+                        className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
+                      />
+                    </div>
                   </div>
 
+                  {/* Email */}
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="email" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
                       Email professionnel <span className="text-steel">*</span>
                     </label>
                     <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      required
-                      value={form.email}
-                      onChange={handleField}
+                      id="email" name="email" type="email" required
+                      value={form.email} onChange={handleField}
                       placeholder="nom@entreprise.com"
                       className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink placeholder:text-ink-soft focus:outline-none focus:border-steel transition-colors"
                     />
                   </div>
 
-                  <div className="flex flex-col gap-1.5">
-                    <label htmlFor="telephone" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
-                      Téléphone
-                    </label>
-                    <input
-                      id="telephone"
-                      name="telephone"
-                      type="tel"
-                      value={form.telephone}
-                      onChange={handleField}
-                      className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors"
-                    />
-                  </div>
-
                   {count === 0 && (
                     <>
-                      <div className="flex flex-col gap-1.5">
-                        <label htmlFor="fluide" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
-                          Fluide concerné <span className="text-steel">*</span>
-                        </label>
-                        <select
-                          id="fluide"
-                          name="fluide"
-                          required
-                          value={form.fluide}
-                          onChange={handleField}
-                          className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors appearance-none"
-                        >
-                          <option value="" disabled>— Sélectionner —</option>
-                          {FLUIDES.map(f => <option key={f} value={f}>{f}</option>)}
-                        </select>
+                      {/* Marque + Fluide */}
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="flex flex-col gap-1.5">
+                          <label htmlFor="marque" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
+                            Marque concernée
+                          </label>
+                          <select
+                            id="marque" name="marque"
+                            value={form.marque} onChange={handleField}
+                            className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors appearance-none"
+                          >
+                            <option value="">— Toutes marques —</option>
+                            {BRANDS.map(b => <option key={b.id} value={b.id}>{b.name}</option>)}
+                          </select>
+                        </div>
+                        <div className="flex flex-col gap-1.5">
+                          <label htmlFor="fluide" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
+                            Fluide concerné <span className="text-steel">*</span>
+                          </label>
+                          <select
+                            id="fluide" name="fluide" required
+                            value={form.fluide} onChange={handleField}
+                            className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors appearance-none"
+                          >
+                            <option value="" disabled>— Sélectionner —</option>
+                            {FLUIDES.map(f => <option key={f} value={f}>{f}</option>)}
+                          </select>
+                        </div>
                       </div>
 
+                      {/* Type de produit */}
                       <div className="flex flex-col gap-1.5">
                         <label htmlFor="typeProduit" className="text-[10px] font-bold uppercase tracking-[0.15em] font-sans text-ink-mid">
-                          Type de produit recherché <span className="text-steel">*</span>
+                          Type de produit <span className="text-steel">*</span>
                         </label>
                         <select
-                          id="typeProduit"
-                          name="typeProduit"
-                          required
-                          value={form.typeProduit}
-                          onChange={handleField}
+                          id="typeProduit" name="typeProduit" required
+                          value={form.typeProduit} onChange={handleField}
                           className="bg-dim border border-border px-3 py-2.5 text-sm font-sans text-ink focus:outline-none focus:border-steel transition-colors appearance-none"
                         >
                           <option value="" disabled>— Sélectionner —</option>
@@ -400,6 +377,26 @@ export default function DevisPage() {
           </div>
         </div>
       </main>
+
+      {/* ── SUCCESS TOAST ── */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-navy-900 border border-steel/40 px-6 py-4 shadow-2xl min-w-[320px]">
+          <div className="w-8 h-8 bg-steel flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="square">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="text-white text-sm font-display font-bold uppercase tracking-tight">Demande envoyée</p>
+            <p className="text-white/50 text-xs font-sans mt-0.5">Réponse sous 24h ouvrées.</p>
+          </div>
+          <button onClick={() => setToast(false)} className="text-white/40 hover:text-white transition-colors ml-2" aria-label="Fermer">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </>
   )
 }

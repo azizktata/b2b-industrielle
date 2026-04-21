@@ -6,6 +6,7 @@ import { BRANDS, getBrandBySlug, getAllBrandSlugs } from "@/lib/brands"
 import { getProducts, getCatalogues } from "@/lib/catalogue"
 import type { MarqueKey } from "@/scripts/scraper/types"
 import BrandProductSearch from "@/components/BrandProductSearch"
+import Footer from "@/components/Footer"
 
 /* ── Static params for all brand slugs ── */
 export function generateStaticParams() {
@@ -383,6 +384,7 @@ export default async function BrandPage({ params }: { params: Promise<{ slug: st
         </section>
 
       </main>
+      <Footer />
     </>
   )
 }

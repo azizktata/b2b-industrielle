@@ -9,6 +9,7 @@ import {
   APPLICATION_LABELS,
 } from "@/lib/catalogue"
 import type { FamilleKey, ApplicationKey, MarqueKey } from "@/scripts/scraper/types"
+import Footer from "@/components/Footer"
 
 // ── Static generation ─────────────────────────────────────────────────────────
 
@@ -33,31 +34,52 @@ export async function generateMetadata({
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
+const PAGE_SIZE = 24
+
+function buildHref(
+  famille: string,
+  params: { q?: string; application?: string; marque?: string; page?: number }
+) {
+  const sp = new URLSearchParams()
+  if (params.q) sp.set("q", params.q)
+  if (params.application) sp.set("application", params.application)
+  if (params.marque) sp.set("marque", params.marque)
+  if (params.page && params.page > 0) sp.set("page", String(params.page))
+  const qs = sp.toString()
+  return `/produits/famille/${famille}${qs ? `?${qs}` : ""}`
+}
+
 export default async function FamillePage({
   params,
   searchParams,
 }: {
   params: Promise<{ famille: string }>
-  searchParams: Promise<{ q?: string; application?: string; marque?: string }>
+  searchParams: Promise<{ q?: string; application?: string; marque?: string; page?: string }>
 }) {
   const { famille } = await params
-  const { q, application, marque } = await searchParams
+  const { q, application, marque, page: pageParam } = await searchParams
 
   const familleKey = famille as FamilleKey
   const meta = FAMILLE_LABELS[familleKey]
   if (!meta) notFound()
 
   const allFamilleProducts = filterProducts({ famille: familleKey })
-  const products = filterProducts({
+  const filtered = filterProducts({
     famille: familleKey,
     q: q?.trim() || undefined,
     application: application as ApplicationKey | undefined,
     marque: marque as MarqueKey | undefined,
   })
 
+  const currentPage = Math.max(0, parseInt(pageParam ?? "0", 10) || 0)
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE)
+  const safePage = Math.min(currentPage, Math.max(0, totalPages - 1))
+  const products = filtered.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE)
+
   const hasFilter = !!(q?.trim() || application || marque)
   const totalAll = allFamilleProducts.length
   const availableMarques = [...new Set(allFamilleProducts.map(p => p.marque))].sort()
+  const filterParams = { q: q?.trim() || undefined, application, marque }
 
   return (
     <>
@@ -132,7 +154,7 @@ export default async function FamillePage({
               {(Object.entries(APPLICATION_LABELS) as [ApplicationKey, string][]).map(([key, label]) => (
                 <Link
                   key={key}
-                  href={`/produits/famille/${famille}?application=${key}${q ? `&q=${encodeURIComponent(q)}` : ""}${marque ? `&marque=${encodeURIComponent(marque)}` : ""}`}
+                  href={buildHref(famille, { ...filterParams, application: key })}
                   scroll={false}
                   className={`px-3 py-1.5 border text-[10px] font-bold uppercase tracking-[0.15em] font-sans transition-colors ${
                     application === key
@@ -152,7 +174,7 @@ export default async function FamillePage({
                 {availableMarques.map((key) => (
                   <Link
                     key={key}
-                    href={`/produits/famille/${famille}?marque=${encodeURIComponent(key)}${q ? `&q=${encodeURIComponent(q)}` : ""}${application ? `&application=${encodeURIComponent(application)}` : ""}`}
+                    href={buildHref(famille, { ...filterParams, marque: key })}
                     scroll={false}
                     className={`px-3 py-1.5 border text-[10px] font-bold uppercase tracking-[0.15em] font-sans transition-colors ${
                       marque === key
@@ -184,7 +206,7 @@ export default async function FamillePage({
           <div className="bg-dim border-b border-border">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between">
               <span className="text-ink text-sm font-sans">
-                <strong className="font-bold">{products.length}</strong> résultat{products.length !== 1 ? "s" : ""}
+                <strong className="font-bold">{filtered.length}</strong> résultat{filtered.length !== 1 ? "s" : ""}
                 {q?.trim() && (
                   <> pour <span className="text-steel font-bold">« {q.trim()} »</span></>
                 )}
@@ -213,11 +235,44 @@ export default async function FamillePage({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
             {products.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
-                {products.map((p) => (
-                  <ProductCard key={p.id} product={p} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                  {products.map((p) => (
+                    <ProductCard key={p.id} product={p} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-between mt-8 pt-5 border-t border-border">
+                    <span className="text-[10px] font-sans text-ink-soft uppercase tracking-[0.15em]">
+                      Page {safePage + 1} / {totalPages} — {filtered.length} référence{filtered.length !== 1 ? "s" : ""}
+                    </span>
+                    <div className="flex gap-2">
+                      <Link
+                        href={buildHref(famille, { ...filterParams, page: safePage - 1 })}
+                        aria-disabled={safePage === 0}
+                        className={`w-9 h-9 flex items-center justify-center border border-border text-ink-mid hover:border-navy-900 hover:text-ink transition-colors ${safePage === 0 ? "opacity-30 pointer-events-none" : ""}`}
+                        aria-label="Page précédente"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+                          <path d="M19 12H5M11 6l-6 6 6 6" />
+                        </svg>
+                      </Link>
+                      <Link
+                        href={buildHref(famille, { ...filterParams, page: safePage + 1 })}
+                        aria-disabled={safePage >= totalPages - 1}
+                        className={`w-9 h-9 flex items-center justify-center border border-border text-ink-mid hover:border-navy-900 hover:text-ink transition-colors ${safePage >= totalPages - 1 ? "opacity-30 pointer-events-none" : ""}`}
+                        aria-label="Page suivante"
+                      >
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+                          <path d="M5 12h14M13 6l6 6-6 6" />
+                        </svg>
+                      </Link>
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
               /* Empty state */
               <div className="py-20 text-center">
@@ -237,8 +292,7 @@ export default async function FamillePage({
             )}
           </div>
         </section>
-
-        {/* ── FAMILLE NAVIGATION ── */}
+           {/* ── FAMILLE NAVIGATION ── */}
         <section className="bg-dim border-t border-border py-10">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <p className="text-[10px] font-bold uppercase tracking-[0.3em] font-sans text-ink/40 mb-4">
@@ -259,7 +313,7 @@ export default async function FamillePage({
             </div>
           </div>
         </section>
-
+     
         {/* ── CTA ── */}
         <section className="bg-navy-900 py-12">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
@@ -288,7 +342,10 @@ export default async function FamillePage({
           </div>
         </section>
 
+
+
       </main>
+      <Footer />
     </>
   )
 }

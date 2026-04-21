@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Header from "@/components/Header"
+import Footer from "@/components/Footer"
 
 interface FormState {
   prenom: string
@@ -87,14 +88,21 @@ const STEPS = [
 
 export default function PartenariatPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM)
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle")
+  const [status, setStatus] = useState<"idle" | "submitting" | "error">("idle")
   const [errorMsg, setErrorMsg] = useState("")
+  const [toast, setToast] = useState(false)
+
+  useEffect(() => {
+    if (!toast) return
+    const t = setTimeout(() => setToast(false), 5000)
+    return () => clearTimeout(t)
+  }, [toast])
 
   function handleField(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }))
   }
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setStatus("submitting")
     setErrorMsg("")
@@ -107,43 +115,13 @@ export default function PartenariatPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || "Erreur inconnue")
-      setStatus("success")
       setForm(EMPTY_FORM)
+      setStatus("idle")
+      setToast(true)
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Erreur lors de l'envoi.")
       setStatus("error")
     }
-  }
-
-  // ── Success screen ──────────────────────────────────────────────────────────
-  if (status === "success") {
-    return (
-      <>
-        <Header />
-        <main className="bg-surface flex-1 flex items-center justify-center px-4 py-24">
-          <div className="max-w-md w-full text-center">
-            <div className="w-16 h-16 bg-steel flex items-center justify-center mx-auto mb-6">
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
-                <path d="M20 6L9 17l-5-5" />
-              </svg>
-            </div>
-            <p className="text-steel text-[10px] font-bold uppercase tracking-[0.3em] font-sans mb-3">Message envoyé</p>
-            <h1 className="font-display font-black text-ink text-3xl uppercase tracking-tight mb-4">
-              Nous avons bien reçu votre demande
-            </h1>
-            <p className="text-ink-mid text-sm font-sans mb-8">
-              Notre équipe commerciale vous recontactera sous 48h pour étudier votre opportunité.
-            </p>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 px-6 py-3.5 bg-navy-900 text-white text-[10px] font-bold uppercase tracking-[0.2em] font-sans hover:bg-steel transition-colors"
-            >
-              Retour à l&apos;accueil
-            </Link>
-          </div>
-        </main>
-      </>
-    )
   }
 
   return (
@@ -375,6 +353,27 @@ export default function PartenariatPage() {
         </section>
 
       </main>
+      <Footer />
+
+      {/* ── SUCCESS TOAST ── */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-4 bg-navy-900 border border-steel/40 px-6 py-4 shadow-2xl min-w-[320px]">
+          <div className="w-8 h-8 bg-steel flex items-center justify-center shrink-0">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24" strokeLinecap="square">
+              <path d="M20 6L9 17l-5-5" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <p className="text-white text-sm font-display font-bold uppercase tracking-tight">Demande envoyée</p>
+            <p className="text-white/50 text-xs font-sans mt-0.5">Notre équipe commerciale vous recontacte sous 48h.</p>
+          </div>
+          <button onClick={() => setToast(false)} className="text-white/40 hover:text-white transition-colors ml-2" aria-label="Fermer">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" strokeLinecap="square">
+              <path d="M18 6L6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
     </>
   )
 }

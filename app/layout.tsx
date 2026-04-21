@@ -18,10 +18,10 @@ const barlow = Barlow({
 export const metadata: Metadata = {
   title: {
     template: "%s | SOGECOR",
-    default: "SOGECOR — Spécialiste Régulation Vapeur & Robinetterie Industrielle",
+    default: "SOGECOR — Société Générale de Commerce et de Représentation",
   },
   description:
-    "Distributeur agréé en robinetterie industrielle, régulation vapeur et instrumentation. Fiches techniques, dimensionnement et devis sous 12h pour les professionnels.",
+    "SOGECOR est une société spécialisée dans le commerce et la représentation, offrant des services de qualité pour répondre aux besoins de ses clients.",
 }
 
 export default function RootLayout({

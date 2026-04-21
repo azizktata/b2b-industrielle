@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import Header from "@/components/Header"
@@ -22,7 +22,7 @@ interface ContactForm {
   message: string
 }
 
-export default function DevisPage() {
+function DevisContent() {
   const { items, removeItem, updateQty, clearItems, count } = useDevis()
   const searchParams = useSearchParams()
   const [form, setForm] = useState<ContactForm>(() => ({
@@ -398,5 +398,13 @@ export default function DevisPage() {
         </div>
       )}
     </>
+  )
+}
+
+export default function DevisPage() {
+  return (
+    <Suspense>
+      <DevisContent />
+    </Suspense>
   )
 }

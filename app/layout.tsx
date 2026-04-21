@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     default: "SOGECOR — Société Générale de Commerce et de Représentation",
   },
   description:
-    "SOGECOR est une société spécialisée dans le commerce et la représentation, offrant des services de qualité pour répondre aux besoins de ses clients.",
+    "SOGECOR — Société Générale de Commerce et de Représentation",
 }
 
 export default function RootLayout({
